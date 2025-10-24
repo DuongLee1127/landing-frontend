@@ -1,103 +1,255 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import AppHeader from "@/components/header";
+import AppFooter from "@/components/footer";
+import style from "@/styles/style.module.scss";
+import { useEffect, useState } from "react";
+
+const images = ["/images/ba-la-gi-min.jpeg", "/images/idea.jpg"];
+
+export default function Body() {
+  const [current, setCurrent] = useState(0);
+
+  const handleNext = () => {
+    console.log(current);
+    setCurrent((prev) => (prev + 1) % images.length);
+  };
+
+  const handlePrev = () => {
+    setCurrent((prev) => (prev - 1 + images.length) % images.length);
+    console.log(current);
+  };
+  useEffect(() => {}, [current]);
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <>
+      <AppHeader />
+      <div className={style["container"]}>
+        <div className={style["about-us"]}>
+          <div className={style["left"]}>
+            <h1>Get More Done with Whitepace</h1>
+            <p>
+              Whitepace is your all-in-one productivity solution designed to
+              help you manage tasks, collaborate with teams, and streamline
+              workflows effortlessly.
+            </p>
+            <div className={style["try-whitepace"]}>Try whitepace Free</div>
+          </div>
+          <div className={style["right"]}>
+            <div className={style["slide-show"]}>
+              <div
+                className={`${style["slides"]} relative overflow-hidden w-[800px] h-[480px]`}
+              >
+                {images.map((image, index) => (
+                  <img
+                    key={index}
+                    className={`${style["slide"]} absolute top-0 left-[${
+                      index == current ? current * 0 : 100
+                    }%]`}
+                    src={image}
+                    alt={`Slide ${index}`}
+                  />
+                ))}
+              </div>
+            </div>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+            <div className={style["arrow-slide"]}>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 512 512"
+                onClick={() => {
+                  handlePrev();
+                }}
+              >
+                <path
+                  fill="white"
+                  d="M512 256a256 256 0 1 0 -512 0 256 256 0 1 0 512 0zM271 135c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-87 87 87 87c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0L167 273c-9.4-9.4-9.4-24.6 0-33.9L271 135z"
+                />
+              </svg>
+
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 512 512"
+                onClick={() => {
+                  handleNext();
+                }}
+              >
+                <path
+                  fill="white"
+                  d="M0 256a256 256 0 1 0 512 0 256 256 0 1 0 -512 0zM241 377c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l87-87-87-87c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0L345 239c9.4 9.4 9.4 24.6 0 33.9L241 377z"
+                />
+              </svg>
+            </div>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+        <div className={style["project"]}>
+          <div className={style["left"]}>
+            <h1>Project Management</h1>
+            <p>
+              Whitepace is your all-in-one productivity solution designed to
+              help you manage tasks, collaborate with teams, and streamline
+              workflows effortlessly.
+            </p>
+            <div className={style["try-whitepace"]}>Get Started</div>
+          </div>
+          <div className={style["right"]}>
+            <img src="images/idea.jpg" alt="acb" />
+          </div>
+        </div>
+        <div className={style["choose-plan"]}>
+          <h1 className={style["plan-title"]}>
+            Choose <span className={style["highlight"]}>Your Plan</span>
+          </h1>
+          <p className={style["plan-desc"]}>
+            Whether you want to get organized, keep your personal life on track,
+            or boost workplace productivity, Whitepace has the right plan for
+            you.
+          </p>
+          <div className={style["plan-list"]}>
+            <div className={`${style["plan-card"]} ${style["plan-free"]}`}>
+              <div className={style["plan-name"]}>Free</div>
+              <div className={style["plan-price"]}>$0</div>
+              <div className={style["plan-desc-short"]}>
+                Capture ideas and find them quickly
+              </div>
+              <ul className={style["plan-features"]}>
+                <li>Sync unlimited devices</li>
+                <li>10 GB monthly uploads</li>
+                <li>200 MB max. note size</li>
+                <li>Customize Home dashboard and access extra widgets</li>
+                <li>Connect primary Google Calendar account</li>
+                <li>
+                  Add due dates, reminders, and notifications to your tasks
+                </li>
+              </ul>
+              <button
+                className={`${style["plan-btn"]} ${style["plan-btn-outline"]}`}
+              >
+                Get Started
+              </button>
+            </div>
+            <div className={`${style["plan-card"]} ${style["plan-personal"]}`}>
+              <div className={style["plan-name"]}>Personal</div>
+              <div className={style["plan-price"]}>$11.99</div>
+              <div className={style["plan-desc-short"]}>
+                Keep home and family on track
+              </div>
+              <ul className={style["plan-features"]}>
+                <li>Sync unlimited devices</li>
+                <li>10 GB monthly uploads</li>
+                <li>200 MB max. note size</li>
+                <li>Customize Home dashboard and access extra widgets</li>
+                <li>Connect primary Google Calendar account</li>
+                <li>
+                  Add due dates, reminders, and notifications to your tasks
+                </li>
+              </ul>
+              <button className={style["plan-btn"]}>Get Started</button>
+            </div>
+            <div
+              className={`${style["plan-card"]} ${style["plan-organization"]}`}
+            >
+              <div className={style["plan-name"]}>Organization</div>
+              <div className={style["plan-price"]}>$49.99</div>
+              <div className={style["plan-desc-short"]}>
+                Capture ideas and find them quickly
+              </div>
+              <ul className={style["plan-features"]}>
+                <li>Sync unlimited devices</li>
+                <li>10 GB monthly uploads</li>
+                <li>200 MB max. note size</li>
+                <li>Customize Home dashboard and access extra widgets</li>
+                <li>Connect primary Google Calendar account</li>
+                <li>
+                  Add due dates, reminders, and notifications to your tasks
+                </li>
+              </ul>
+              <button
+                className={`${style["plan-btn"]} ${style["plan-btn-outline"]}`}
+              >
+                Get Started
+              </button>
+            </div>
+          </div>
+        </div>
+        <div className={style["client-say"]}>
+          <h1 className={style["client-title"]}>
+            What Our Clients <span className={style["highlight"]}>Says</span>
+          </h1>
+          <div className={style["client-list"]}>
+            <div
+              className={`${style["client-card"]} ${style["client-card-white"]}`}
+            >
+              <div className={style["client-quote"]}>&#8220;</div>
+              <div className={style["client-text"]}>
+                Whitepace is designed as a collaboration tool for businesses
+                that is a full project management solution.
+              </div>
+              <hr className={style["client-divider"]} />
+              <div className={style["client-info"]}>
+                <img
+                  className={style["client-avatar"]}
+                  src="images/image1.jpg"
+                  alt="image"
+                />
+                <div>
+                  <div className={style["client-name"]}>Oberon Shaw, MCH</div>
+                  <div className={style["client-role"]}>
+                    Head of Talent Acquisition, North America
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              className={`${style["client-card"]} ${style["client-card-blue"]}`}
+            >
+              <div className={style["client-quote"]}>&#8220;</div>
+              <div className={style["client-text"]}>
+                Whitepace is designed as a collaboration tool for businesses
+                that is a full project management solution.
+              </div>
+              <hr className={style["client-divider"]} />
+              <div className={style["client-info"]}>
+                <img
+                  className={style["client-avatar"]}
+                  src="images/image2.jpg"
+                  alt="image"
+                />
+                <div>
+                  <div className={style["client-name"]}>Oberon Shaw, MCH</div>
+                  <div className={style["client-role"]}>
+                    Head of Talent Acquisition, North America
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              className={`${style["client-card"]} ${style["client-card-blue"]}`}
+            >
+              <div className={style["client-quote"]}>&#8220;</div>
+              <div className={style["client-text"]}>
+                Whitepace is designed as a collaboration tool for businesses
+                that is a full project management solution.
+              </div>
+              <hr className={style["client-divider"]} />
+              <div className={style["client-info"]}>
+                <img
+                  className={style["client-avatar"]}
+                  src="images/image3.jpg"
+                  alt="image"
+                />
+                <div>
+                  <div className={style["client-name"]}>Oberon Shaw, MCH</div>
+                  <div className={style["client-role"]}>
+                    Head of Talent Acquisition, North America
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <AppFooter />
+    </>
   );
 }

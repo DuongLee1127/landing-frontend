@@ -1,10 +1,12 @@
 "use client";
 import style from "@/styles/login.module.scss";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -17,13 +19,15 @@ export default function Login() {
 
     const data = await res.json();
 
-    console.log(data);
-
     if (res.ok) {
       localStorage.setItem("token", data.token);
-      alert("Đăng nhập thành công!");
+      router.push("/dashboard");
     } else {
-      alert(data.message);
+      let message = data.message;
+      if (typeof message === "object") {
+        message = Object.values(data.message).join(", ");
+      }
+      alert(message);
     }
   };
 

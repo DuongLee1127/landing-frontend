@@ -20,7 +20,7 @@ export default function Login() {
     const data = await res.json();
 
     if (res.ok) {
-      localStorage.setItem("token", data.token);
+      cookieStore.set("token", data.token);
       router.push("/dashboard");
     } else {
       let message = data.message;

@@ -24,8 +24,11 @@ export default function AccountMenu() {
     };
   }, []);
 
-  const [nameUser, setNameUser] = useState("");
-
+  type User = {
+    name: string;
+    image: string;
+  };
+  const [user, setUser] = useState<User>();
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -38,7 +41,8 @@ export default function AccountMenu() {
         });
 
         const data = await res.json();
-        setNameUser(data.name);
+        console.log("Raw user data:", data);
+        setUser(data);
         console.log("Fetch user response:", data);
       } catch (err) {
         console.error("Không lấy được user:", err);
@@ -79,12 +83,12 @@ export default function AccountMenu() {
         aria-haspopup="true"
       >
         <img
-          src="/images/no-picture-available-icon-20.png"
+          src={user?.image}
           alt="avatar"
           className="w-8 h-8 rounded-full object-cover"
         />
         <span className="hidden md:inline text-sm text-gray-700 font-medium">
-          {nameUser}
+          {user?.name}
         </span>
         <svg
           className="w-4 h-4 text-gray-400"
@@ -100,12 +104,12 @@ export default function AccountMenu() {
           <div className="px-4 py-3 border-b border-white/10">
             <div className="flex items-center gap-3">
               <img
-                src="/images/no-picture-available-icon-20.png"
+                src={user?.image}
                 alt="avatar"
                 className="w-11 h-11 rounded-full object-cover"
               />
               <div>
-                <div className="font-semibold">{nameUser}</div>
+                <div className="font-semibold">{user?.name}</div>
               </div>
             </div>
           </div>

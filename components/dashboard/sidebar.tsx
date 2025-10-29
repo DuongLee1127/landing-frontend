@@ -1,4 +1,10 @@
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { links } from "@/routes/link";
+
 export default function Sidebar() {
+  const pathname = usePathname();
+  const linkRoute = links;
   return (
     <aside className="w-72 min-h-screen border-r border-gray-100 p-6 flex flex-col gap-6">
       <div className="flex items-center gap-3">
@@ -26,34 +32,28 @@ export default function Sidebar() {
         </div>
         <div>
           <div className="text-sm font-semibold">DuongLe</div>
-          <div className="text-xs text-gray-400">Pages / Dashboard</div>
         </div>
       </div>
 
       <nav className="flex-1">
         <ul className="flex flex-col gap-3">
-          <li>
-            <a
-              className="flex items-center gap-3 p-3 rounded-lg transition bg-white shadow text-indigo-600 font-medium"
-              href="#"
-            >
-              <span className="w-9 h-9 bg-white rounded-md flex items-center justify-center shadow-sm">
-                <img className="w-[16px]" src="images/dashboard.png" alt="" />
-              </span>
-              <span>Dashboard</span>
-            </a>
-          </li>
-          <li>
-            <a
-              className="flex items-center gap-3 p-3 rounded-lg transition text-gray-600 hover:bg-white hover:shadow"
-              href="#"
-            >
-              <span className="w-9 h-9 bg-white rounded-md flex items-center justify-center shadow-sm">
-                <img className="w-[16px]" src="images/dashboard.png" alt="" />
-              </span>
-              <span>Slide</span>
-            </a>
-          </li>
+          {linkRoute.map((link, index) => (
+            <li key={index}>
+              <Link
+                className={`flex items-center gap-3 p-3 rounded-lg transition ${
+                  link.href == pathname
+                    ? "bg-white shadow text-indigo-600 font-medium"
+                    : "text-gray-600 hover:bg-[#f8f8fa] hover:shadow"
+                }`}
+                href={link.href}
+              >
+                <span className="w-9 h-9 bg-white rounded-md flex items-center justify-center shadow-sm">
+                  <img className="w-[16px]" src="images/dashboard.png" alt="" />
+                </span>
+                <span>{link.name}</span>
+              </Link>
+            </li>
+          ))}
         </ul>
       </nav>
 

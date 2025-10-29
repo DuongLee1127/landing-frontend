@@ -1,13 +1,18 @@
 "use client";
 
 import AccountMenu from "@/components/dashboard/accounMenu";
+import { links } from "@/routes/link";
+import { usePathname } from "next/navigation";
 
 export default function Navbar() {
+  const obj = links.filter((link) => link.href === usePathname());
   return (
     <header className="flex items-center justify-between mb-6">
       <div>
         <div className="text-xs text-gray-400">Pages /</div>
-        <div className="text-sm font-semibold text-gray-800">Dashboard</div>
+        <div className="text-sm font-semibold text-gray-800">
+          {obj[0]?.name}
+        </div>
       </div>
 
       <div className="flex items-center gap-4">

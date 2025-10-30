@@ -41,9 +41,7 @@ export default function AccountMenu() {
         });
 
         const data = await res.json();
-        console.log("Raw user data:", data);
         setUser(data);
-        console.log("Fetch user response:", data);
       } catch (err) {
         console.error("Không lấy được user:", err);
       }
@@ -121,8 +119,8 @@ export default function AccountMenu() {
             >
               <span className="w-6 h-6 flex items-center justify-center rounded">
                 <svg
-                  width="800px"
-                  height="800px"
+                  width="20"
+                  height="20"
                   viewBox="0 0 24 24"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"

@@ -1,5 +1,6 @@
 "use client";
 import Cookies from "js-cookie";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export default function User() {
@@ -36,7 +37,7 @@ export default function User() {
   }, []);
   return (
     <>
-      <div className="w-full px-6 py-6 mx-auto">
+      <div className="w-full py-6 mx-auto">
         <div className="flex flex-wrap -mx-3">
           <div className="flex-none w-full max-w-full px-3">
             <div className="relative flex flex-col min-w-0 mb-6 break-words bg-white border-0 border-transparent border-solid shadow-soft-xl rounded-2xl bg-clip-border">
@@ -48,13 +49,13 @@ export default function User() {
                   <table className="items-center w-full mb-0 align-top border-gray-200 text-slate-500">
                     <thead className="align-bottom">
                       <tr>
-                        <th className="px-6 py-3 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">
+                        <th className="px-6 py-3 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">
                           Users
                         </th>
-                        <th className="px-6 py-3 pl-2 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">
+                        <th className="px-6 py-3 pl-2 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">
                           Function
                         </th>
-                        <th className="px-6 py-3 font-bold text-center uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">
+                        <th className="px-6 py-3 font-bold text-center uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">
                           Status
                         </th>
                         <th className="px-6 py-3 font-semibold capitalize align-middle bg-transparent border-b border-gray-200 border-solid shadow-none tracking-none whitespace-nowrap text-slate-400 opacity-70"></th>
@@ -84,10 +85,10 @@ export default function User() {
                           </td>
                           <td className="p-2 align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
                             <p className="mb-0 text-xs font-semibold leading-tight">
-                              Manager
+                              Programator
                             </p>
                             <p className="mb-0 text-xs leading-tight text-slate-400">
-                              Organization
+                              Deverloper
                             </p>
                           </td>
                           <td className="p-2 text-sm leading-normal text-center align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
@@ -96,13 +97,12 @@ export default function User() {
                             </span>
                           </td>
                           <td className="p-2 align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
-                            <a
-                              href="javascript:;"
+                            <Link
+                              href={`/dashboard/users/edit?id=${user.id}`}
                               className="text-xs font-semibold leading-tight text-slate-400"
                             >
-                              {" "}
-                              Edit{" "}
-                            </a>
+                              Edit
+                            </Link>
                           </td>
                         </tr>
                       ))}

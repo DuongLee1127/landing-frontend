@@ -1,7 +1,7 @@
 "use client";
 
-  import { useState } from "react";
-  import Cookies from "js-cookie";
+import { useState } from "react";
+import Cookies from "js-cookie";
 
 export default function UploadPage() {
   const [file, setFile] = useState<File | null>(null);

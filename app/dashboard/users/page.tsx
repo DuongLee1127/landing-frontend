@@ -1,9 +1,9 @@
 "use client";
 import Cookies from "js-cookie";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 
-export default function User() {
+function User() {
   type User = {
     id: number;
     name: string;
@@ -92,7 +92,7 @@ export default function User() {
                             </p>
                           </td>
                           <td className="p-2 text-sm leading-normal text-center align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
-                            <span className="bg-gradient-to-tl from-slate-600 to-slate-300 px-2.5 text-xs rounded-1.8 py-1.4 inline-block whitespace-nowrap text-center align-baseline font-bold uppercase leading-none text-white">
+                            <span className="bg-gradient-to-tl rounded-lg py-1.5 px-2.5 from-slate-600 to-slate-300 text-xs inline-block whitespace-nowrap text-center align-baseline font-bold uppercase leading-none text-white">
                               Offline
                             </span>
                           </td>
@@ -174,3 +174,5 @@ export default function User() {
     </>
   );
 }
+
+export default memo(User);

@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from "react";
 export default function User() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imageFile, setImageFile] = useState<File | null | string>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [errors, setErrors] = useState<{ name?: string; email?: string }>({});
   const [saving, setSaving] = useState(false);
@@ -28,8 +28,6 @@ export default function User() {
 
       const data = await user.json();
 
-      console.log(data);
-
       if (user.ok) {
         setEmail(data.email);
         setName(data.name);
@@ -41,10 +39,14 @@ export default function User() {
   }, []);
 
   useEffect(() => {
-    if (!imageFile) return;
-    const url = imageFile;
-    setPreview(url);
-    return () => url;
+    if (imageFile instanceof File) {
+      const imageUrl = URL.createObjectURL(imageFile);
+      setPreview(imageUrl);
+    } else if (typeof imageFile === "string") {
+      setPreview(imageFile);
+    } else {
+      setPreview(null);
+    }
   }, [imageFile]);
 
   function validate() {
@@ -64,13 +66,28 @@ export default function User() {
 
     await new Promise((r) => setTimeout(r, 900));
 
-    Cookies.set("user_name", name, { expires: 7 });
-    Cookies.set("user_email", email, { expires: 7 });
-    if (preview) Cookies.set("user_avatar", preview, { expires: 7 });
+    const token = Cookies.get("token");
 
-    setSaving(false);
-    setSuccess("Profile updated successfully");
-    setTimeout(() => setSuccess(null), 3000);
+    if (!imageFile) return;
+    const formData = new FormData();
+    formData.append("image", imageFile);
+    formData.append("name", name);
+    formData.append("email", email);
+
+    const data = await fetch(`http://localhost:8000/api/update-user/${id}`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    const dataJson = await data.json();
+    if (data.ok) {
+      setSaving(false);
+      setSuccess("Profile updated successfully");
+      setTimeout(() => setSuccess(null), 3000);
+    }
   }
 
   function onFileChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -82,7 +99,6 @@ export default function User() {
   function removeImage() {
     setImageFile(null);
     setPreview(null);
-    Cookies.remove("user_avatar");
     if (fileRef.current) fileRef.current.value = "";
   }
 

@@ -41,6 +41,7 @@ export default function AccountMenu() {
         });
 
         const data = await res.json();
+        console.log(data.message);
         setUser(data);
       } catch (err) {
         console.error("Không lấy được user:", err);

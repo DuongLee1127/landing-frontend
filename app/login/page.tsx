@@ -2,6 +2,7 @@
 import style from "@/styles/login.module.scss";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -102,7 +103,7 @@ export default function Login() {
             </button>
           </form>
           <div className={style["login-register"]}>
-            Not Registered Yet? <a href="#">Create an account</a>
+            Not Registered Yet? <Link href="/register">Create an account</Link>
           </div>
         </div>
       </div>

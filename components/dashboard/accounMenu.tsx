@@ -41,7 +41,6 @@ export default function AccountMenu() {
         });
 
         const data = await res.json();
-        console.log(data.message);
         setUser(data);
       } catch (err) {
         console.error("Không lấy được user:", err);
@@ -50,7 +49,6 @@ export default function AccountMenu() {
 
     fetchUser();
   }, []);
-
   const handleLogout = async () => {
     try {
       const token = Cookies.get("token");

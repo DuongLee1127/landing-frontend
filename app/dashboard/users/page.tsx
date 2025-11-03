@@ -25,6 +25,7 @@ function User() {
 
       if (user.ok) {
         setUsers(data);
+        console.log(data);
       } else {
         let message = data.message;
         if (typeof message === "object") {
@@ -69,7 +70,7 @@ function User() {
                               <div>
                                 <img
                                   src={user.image}
-                                  className="inline-flex items-center justify-center mr-4 text-sm text-white transition-all duration-200 ease-soft-in-out h-9 w-9 rounded-xl"
+                                  className="inline-flex rounded-xl object-cover items-center justify-center mr-4 text-sm text-white transition-all duration-200 ease-soft-in-out h-9 w-9"
                                   alt="user1"
                                 />
                               </div>

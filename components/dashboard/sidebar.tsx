@@ -5,6 +5,11 @@ import { links } from "@/routes/link";
 export default function Sidebar() {
   const pathname = usePathname();
   const linkRoute = links;
+  let activePath = pathname.split("/")[2];
+  if (!activePath) {
+    activePath = "dashboard";
+  }
+
   return (
     <aside className="w-72 min-h-screen border-r border-gray-100 p-6 flex flex-col gap-6">
       <div className="flex items-center gap-3">
@@ -41,7 +46,7 @@ export default function Sidebar() {
             <li key={index}>
               <Link
                 className={`flex items-center gap-3 p-3 rounded-lg transition ${
-                  link.href == pathname
+                  link.active == activePath
                     ? "bg-white shadow text-indigo-600 font-medium"
                     : "text-gray-600 hover:bg-[#f8f8fa] hover:shadow"
                 }`}

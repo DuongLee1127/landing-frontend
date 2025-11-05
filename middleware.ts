@@ -31,13 +31,6 @@ export function middleware(request: NextRequest) {
             Authorization: `Bearer ${token}`,
           },
         });
-
-        if (res.ok) {
-          request.cookies.delete("token");
-          window.location.href = "/login";
-        } else {
-          console.error("Logout failed:", await res.text());
-        }
       } catch (err) {
         console.error("Network error:", err);
       }

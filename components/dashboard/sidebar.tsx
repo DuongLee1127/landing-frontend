@@ -47,7 +47,7 @@ export default function Sidebar() {
               <Link
                 className={`flex items-center gap-3 p-3 rounded-lg transition ${
                   link.active == activePath
-                    ? "bg-white shadow text-indigo-600 font-medium"
+                    ? "bg-white shadow font-bold"
                     : "text-gray-600 hover:bg-[#f8f8fa] hover:shadow"
                 }`}
                 href={link.href}

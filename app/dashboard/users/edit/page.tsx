@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from "react";
 export default function User() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [role, setRole] = useState<string>("");
   const [imageFile, setImageFile] = useState<File | null | string>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [errors, setErrors] = useState<{ name?: string; email?: string }>({});
@@ -33,6 +34,7 @@ export default function User() {
         setName(data.name);
         setImageFile(data.image);
         setPreview(data.image);
+        setRole(data.role_id);
       }
     };
     fetchUser();
@@ -73,6 +75,7 @@ export default function User() {
     formData.append("image", imageFile);
     formData.append("name", name);
     formData.append("email", email);
+    formData.append("role", role);
 
     const data = await fetch(`http://localhost:8000/api/update-user/${id}`, {
       method: "POST",
@@ -174,90 +177,153 @@ export default function User() {
           </div>
 
           {/* fields column */}
-          <div className="lg:col-span-2 p-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
+          <div className="col-span-2">
+            <div className="lg:col-span-2 p-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label className="text-xs font-semibold text-slate-600">
+                    Name <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className={`mt-2 block w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 ${
+                      errors.name
+                        ? "border-rose-400 focus:ring-rose-200"
+                        : "border-gray-200 focus:ring-indigo-200"
+                    }`}
+                    placeholder="Full name"
+                  />
+                  {errors.name && (
+                    <div className="text-rose-500 text-xs mt-1">
+                      {errors.name}
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-slate-600">
+                    Email <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className={`mt-2 block w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 ${
+                      errors.email
+                        ? "border-rose-400 focus:ring-rose-200"
+                        : "border-gray-200 focus:ring-indigo-200"
+                    }`}
+                    placeholder="you@company.com"
+                  />
+                  {errors.email && (
+                    <div className="text-rose-500 text-xs mt-1">
+                      {errors.email}
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-slate-600">
+                    Roles <span className="text-rose-500">*</span>
+                  </label>
+                  <div className="flex gap-3 mt-3">
+                    <label className="cursor-pointer">
+                      <input
+                        type="radio"
+                        name="role"
+                        value="1"
+                        onChange={(e) => setRole(e.target.value)}
+                        className={`peer hidden ${role}`}
+                        checked={role == "1"}
+                      />
+                      <span
+                        className="px-4 py-1.5 rounded-full text-sm border border-gray-300 text-gray-700
+      hover:bg-gray-100 transition
+      peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600"
+                      >
+                        Admin
+                      </span>
+                    </label>
+
+                    <label className="cursor-pointer">
+                      <input
+                        type="radio"
+                        name="role"
+                        value="2"
+                        onChange={(e) => setRole(e.target.value)}
+                        className="peer hidden"
+                        checked={role == "2"}
+                      />
+                      <span
+                        className="px-4 py-1.5 rounded-full text-sm border border-gray-300 text-gray-700
+      hover:bg-gray-100 transition
+      peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600"
+                      >
+                        User
+                      </span>
+                    </label>
+
+                    <label className="cursor-pointer">
+                      <input
+                        type="radio"
+                        name="role"
+                        value="3"
+                        onChange={(e) => setRole(e.target.value)}
+                        className="peer hidden"
+                        checked={role == "3"}
+                      />
+                      <span
+                        className="px-4 py-1.5 rounded-full text-sm border border-gray-300 text-gray-700
+      hover:bg-gray-100 transition
+      peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600"
+                      >
+                        Editor
+                      </span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-6">
                 <label className="text-xs font-semibold text-slate-600">
-                  Name
+                  About
                 </label>
-                <input
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className={`mt-2 block w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 ${
-                    errors.name
-                      ? "border-rose-400 focus:ring-rose-200"
-                      : "border-gray-200 focus:ring-indigo-200"
-                  }`}
-                  placeholder="Full name"
+                <textarea
+                  placeholder="Short bio (optional)"
+                  className="mt-2 block w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-200"
+                  rows={4}
                 />
-                {errors.name && (
-                  <div className="text-rose-500 text-xs mt-1">
-                    {errors.name}
-                  </div>
-                )}
               </div>
 
-              <div>
-                <label className="text-xs font-semibold text-slate-600">
-                  Email
-                </label>
-                <input
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className={`mt-2 block w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 ${
-                    errors.email
-                      ? "border-rose-400 focus:ring-rose-200"
-                      : "border-gray-200 focus:ring-indigo-200"
-                  }`}
-                  placeholder="you@company.com"
-                />
-                {errors.email && (
-                  <div className="text-rose-500 text-xs mt-1">
-                    {errors.email}
-                  </div>
-                )}
-              </div>
-            </div>
+              <div className="mt-6 flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <button
+                    type="submit"
+                    className={`inline-flex items-center gap-2 px-5 py-2 rounded-lg text-white font-semibold shadow-sm ${
+                      saving
+                        ? "bg-indigo-400 cursor-wait"
+                        : "bg-indigo-600 hover:bg-indigo-700"
+                    }`}
+                    disabled={saving}
+                  >
+                    {saving ? "Saving..." : "Save changes"}
+                  </button>
 
-            <div className="mt-6">
-              <label className="text-xs font-semibold text-slate-600">
-                About
-              </label>
-              <textarea
-                placeholder="Short bio (optional)"
-                className="mt-2 block w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-200"
-                rows={4}
-              />
-            </div>
+                  <Link
+                    href="/dashboard/users"
+                    className="text-sm text-gray-600 hover:underline"
+                  >
+                    Cancel
+                  </Link>
+                </div>
 
-            <div className="mt-6 flex items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <button
-                  type="submit"
-                  className={`inline-flex items-center gap-2 px-5 py-2 rounded-lg text-white font-semibold shadow-sm ${
-                    saving
-                      ? "bg-indigo-400 cursor-wait"
-                      : "bg-indigo-600 hover:bg-indigo-700"
-                  }`}
-                  disabled={saving}
-                >
-                  {saving ? "Saving..." : "Save changes"}
-                </button>
-
-                <Link
-                  href="/dashboard/users"
-                  className="text-sm text-gray-600 hover:underline"
-                >
-                  Cancel
-                </Link>
-              </div>
-
-              <div>
-                {success && (
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-sm">
-                    ✓ {success}
-                  </div>
-                )}
+                <div>
+                  {success && (
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-sm">
+                      ✓ {success}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>

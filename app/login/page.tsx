@@ -22,7 +22,10 @@ export default function Login() {
 
     if (res.ok) {
       cookieStore.set("token", data.token);
-      router.push("/dashboard");
+      if (data.role_id === 1) {
+        router.push("/dashboard");
+      }
+      router.push("/");
     } else {
       let message = data.message;
       if (typeof message === "object") {

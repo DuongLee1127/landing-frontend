@@ -168,7 +168,7 @@ export default function SignUp() {
                 inputMode="numeric"
                 pattern="[0-9]{6}"
                 maxLength={6}
-                value={otp == 0 ? "******" : otp}
+                value={otp == 0 ? "" : otp}
                 onChange={(e) => {
                   setOtp(Number(e.target.value));
                 }}

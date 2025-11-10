@@ -22,10 +22,11 @@ export default function Login() {
 
     if (res.ok) {
       cookieStore.set("token", data.token);
-      if (data.role_id === 1) {
+      if (data.role_id === 2) {
+        router.push("/");
+      } else {
         router.push("/dashboard");
       }
-      router.push("/");
     } else {
       let message = data.message;
       if (typeof message === "object") {
@@ -90,7 +91,6 @@ export default function Login() {
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="************"
               required
             />
             <div className={style["login-options"]}>

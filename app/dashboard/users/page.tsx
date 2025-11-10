@@ -51,22 +51,28 @@ function User() {
                   <table className="items-center w-full mb-0 align-top border-gray-200 text-slate-500">
                     <thead className="align-bottom">
                       <tr>
-                        <th className="px-6 py-3 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">
+                        <th className="px-6 py-3 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xs border-b-solid tracking-none whitespace-nowrap text-slate-700 opacity-70">
                           Users
                         </th>
-                        <th className="px-6 py-3 pl-2 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">
+                        <th className="px-6 py-3 pl-2 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xs border-b-solid tracking-none whitespace-nowrap text-slate-700 opacity-70">
                           Function
                         </th>
-                        <th className="px-6 py-3 font-bold text-center uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">
+                        <th className="px-6 py-3 font-bold text-center uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xs border-b-solid tracking-none whitespace-nowrap text-slate-700 opacity-70">
                           Status
                         </th>
-                        <th className="px-6 py-3 font-semibold capitalize align-middle bg-transparent border-b border-gray-200 border-solid shadow-none tracking-none whitespace-nowrap text-slate-400 opacity-70"></th>
+                        <th className="px-6 py-3 font-semibold capitalize align-middle bg-transparent border-b border-gray-200 border-solid shadow-none tracking-none whitespace-nowrap text-slate-700 opacity-70"></th>
                       </tr>
                     </thead>
                     <tbody>
                       {users.map((user, index) => (
                         <tr key={index}>
-                          <td className="p-2 align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
+                          <td
+                            className={`p-2 align-middle bg-transparent ${
+                              index == users.length - 1
+                                ? "border-b-0"
+                                : "border-b"
+                            } whitespace-nowrap shadow-transparent`}
+                          >
                             <div className="flex px-2 py-1">
                               <div>
                                 <img
@@ -79,21 +85,33 @@ function User() {
                                 <h6 className="mb-0 text-sm leading-normal">
                                   {user.name}
                                 </h6>
-                                <p className="mb-0 text-xs leading-tight text-slate-400">
+                                <p className="mb-0 text-xs leading-tight text-slate-500">
                                   {user.email}
                                 </p>
                               </div>
                             </div>
                           </td>
-                          <td className="p-2 align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
+                          <td
+                            className={`p-2 align-middle bg-transparent ${
+                              index == users.length - 1
+                                ? "border-b-0"
+                                : "border-b"
+                            } whitespace-nowrap shadow-transparent`}
+                          >
                             <p className="mb-0 text-xs font-semibold leading-tight">
                               Programator
                             </p>
-                            <p className="mb-0 text-xs leading-tight text-slate-400">
+                            <p className="mb-0 text-xs leading-tight text-slate-500">
                               Deverloper
                             </p>
                           </td>
-                          <td className="p-2 text-sm leading-normal text-center align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
+                          <td
+                            className={`p-2 text-sm leading-normal text-center align-middle bg-transparent ${
+                              index == users.length - 1
+                                ? "border-b-0"
+                                : "border-b"
+                            } whitespace-nowrap shadow-transparent`}
+                          >
                             <span
                               className={`bg-gradient-to-tl rounded-lg py-1.5 px-2.5 text-xs inline-block whitespace-nowrap text-center align-baseline font-bold uppercase leading-none text-white
                             ${
@@ -105,10 +123,16 @@ function User() {
                               {user.is_online ? "Online" : "Offline"}
                             </span>
                           </td>
-                          <td className="p-2 align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
+                          <td
+                            className={`p-2 align-middle bg-transparent ${
+                              index == users.length - 1
+                                ? "border-b-0"
+                                : "border-b"
+                            } whitespace-nowrap shadow-transparent`}
+                          >
                             <Link
                               href={`/dashboard/users/edit?id=${user.id}`}
-                              className="text-xs font-semibold leading-tight text-slate-400"
+                              className="text-xs font-semibold leading-tight text-slate-600"
                             >
                               Edit
                             </Link>
@@ -126,7 +150,7 @@ function User() {
           <div className="w-full px-6 mx-auto">
             <div className="flex flex-wrap items-center -mx-3 lg:justify-between">
               <div className="w-full max-w-full px-3 mt-0 mb-6 shrink-0 lg:mb-0 lg:w-1/2 lg:flex-none">
-                <div className="text-sm leading-normal text-center text-slate-500 lg:text-left">
+                <div className="text-sm leading-normal text-center text-slate-600 lg:text-left">
                   © 2025, made with <i className="fa fa-heart"></i> by
                   <a
                     href="https://www.creative-tim.com"
@@ -144,7 +168,7 @@ function User() {
                   <li className="nav-item">
                     <a
                       href="#!"
-                      className="block px-4 pt-0 pb-1 text-sm font-normal transition-colors ease-soft-in-out text-slate-500"
+                      className="block px-4 pt-0 pb-1 text-sm font-normal transition-colors ease-soft-in-out text-slate-600"
                     >
                       DuongLe
                     </a>
@@ -152,7 +176,7 @@ function User() {
                   <li className="nav-item">
                     <a
                       href="#!"
-                      className="block px-4 pt-0 pb-1 text-sm font-normal transition-colors ease-soft-in-out text-slate-500"
+                      className="block px-4 pt-0 pb-1 text-sm font-normal transition-colors ease-soft-in-out text-slate-600"
                     >
                       About Us
                     </a>
@@ -160,7 +184,7 @@ function User() {
                   <li className="nav-item">
                     <a
                       href="#!"
-                      className="block px-4 pt-0 pb-1 text-sm font-normal transition-colors ease-soft-in-out text-slate-500"
+                      className="block px-4 pt-0 pb-1 text-sm font-normal transition-colors ease-soft-in-out text-slate-600"
                     >
                       Blog
                     </a>
@@ -168,7 +192,7 @@ function User() {
                   <li className="nav-item">
                     <a
                       href="#!"
-                      className="block px-4 pt-0 pb-1 pr-0 text-sm font-normal transition-colors ease-soft-in-out text-slate-500"
+                      className="block px-4 pt-0 pb-1 pr-0 text-sm font-normal transition-colors ease-soft-in-out text-slate-600"
                       target="_blank"
                     >
                       License

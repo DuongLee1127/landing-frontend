@@ -5,19 +5,24 @@ import AppFooter from "@/components/footer";
 import style from "@/styles/style.module.scss";
 import { useEffect, useState } from "react";
 
-const images = ["/images/ba-la-gi-min.jpeg", "/images/idea.jpg"];
+const images = [
+  "/images/ba-la-gi-min.jpeg",
+  "/images/idea.jpg",
+  "/images/IT.jpg ",
+];
 
 export default function Body() {
   const [current, setCurrent] = useState(0);
-
-  const handleNext = () => {
-    console.log(current);
-    setCurrent((prev) => (prev + 1) % images.length);
-  };
+  const [is_next, setIs_Next] = useState(true);
 
   const handlePrev = () => {
+    setCurrent((prev) => (prev + 1) % images.length);
+    setIs_Next(true);
+  };
+
+  const handleNext = () => {
     setCurrent((prev) => (prev - 1 + images.length) % images.length);
-    console.log(current);
+    setIs_Next(false);
   };
   useEffect(() => {}, [current]);
 
@@ -43,9 +48,9 @@ export default function Body() {
                 {images.map((image, index) => (
                   <img
                     key={index}
-                    className={`${style["slide"]} absolute top-0 left-[${
-                      index == current ? current * 0 : 100
-                    }%]`}
+                    className={`${style["slide"]} absolute top-0 ${
+                      is_next === true ? "" : "-"
+                    }translate-x-[${index == current ? "0" : "100"}%]`}
                     src={image}
                     alt={`Slide ${index}`}
                   />

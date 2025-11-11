@@ -1,26 +1,16 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import axios from "axios";
+
 export function middleware(request: NextRequest) {
   const token = request.cookies.get("token")?.value;
+  const role = request.cookies.get("role")?.value;
+  if (!role) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
+  if (role != "1" && role != "3") {
+    return NextResponse.redirect(new URL("/", request.url));
+  }
 
-  const api = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL,
-    withCredentials: true,
-  });
-
-  api.interceptors.response.use(
-    (response) => response,
-    (error) => {
-      if (error.response?.status === 401) {
-        if (typeof window !== "undefined") {
-          request.cookies.delete("token");
-          window.location.href = "/login";
-        }
-      }
-      return Promise.reject(error);
-    }
-  );
   if (!token) {
     const handleLogout = async () => {
       try {

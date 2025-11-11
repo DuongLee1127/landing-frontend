@@ -49,8 +49,8 @@ export default function Body() {
                   <img
                     key={index}
                     className={`${style["slide"]} absolute top-0 ${
-                      is_next === true ? "" : "-"
-                    }translate-x-[${index == current ? "0" : "100"}%]`}
+                      is_next == true ? "" : "-"
+                    }translate-x-[${index == current ? 0 : 100}%]`}
                     src={image}
                     alt={`Slide ${index}`}
                   />

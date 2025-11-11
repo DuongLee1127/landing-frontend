@@ -1,22 +1,24 @@
-// utils/axios.ts
-import axios from "axios";
-import Cookies from "js-cookie";
+export async function apiFetch(url: string, options: RequestInit = {}) {
+  const res = await fetch(`${url}`, {
+    ...options,
+    credentials: "include",
+    headers: {
+      Accept: "application/json",
+      ...(options.headers || {}),
+    },
+  });
 
-export const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
-  withCredentials: true,
-});
-
-// Tự động logout nếu backend trả về 401
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      if (typeof window !== "undefined") {
-        Cookies.remove("token");
-        window.location.href = "/login";
-      }
+  // Nếu backend trả về 401 → tự động logout
+  if (res.status === 401) {
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("user"); // nếu bạn lưu user trong localStorage
+      window.location.href = "/login";
     }
-    return Promise.reject(error);
+  } else if (res.status === 403) {
+    if (typeof window !== "undefined") {
+      window.location.href = "/";
+    }
   }
-);
+
+  return res;
+}

@@ -2,6 +2,7 @@
 import Cookies from "js-cookie";
 import Link from "next/link";
 import { memo, useEffect, useState } from "react";
+import Footer from "@/components/dashboard/footer";
 
 function User() {
   type User = {
@@ -10,12 +11,16 @@ function User() {
     email: string;
     image: string;
     is_online: boolean;
+    role_id: number;
   };
   const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       const token = Cookies.get("token");
       const user = await fetch("http://localhost:8000/api/get-users", {
+        next: { revalidate: 60 },
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -34,9 +39,34 @@ function User() {
         }
         alert(message);
       }
+      setLoading(false);
     };
     fetchData();
   }, []);
+  const handleRole = (role_id: number) => {
+    switch (role_id) {
+      case 1:
+        return "Admin";
+      case 2:
+        return "User";
+      case 3:
+        return "Editor";
+      default:
+        return "User";
+    }
+  };
+  const handleRoleColor = (role_id: number) => {
+    switch (role_id) {
+      case 1:
+        return "Full powers";
+      case 2:
+        return "Read only";
+      case 3:
+        return "Edit";
+      default:
+        return "Read only";
+    }
+  };
   return (
     <>
       <div className="w-full py-6 mx-auto">
@@ -44,7 +74,7 @@ function User() {
           <div className="flex-none w-full max-w-full px-3">
             <div className="relative flex flex-col min-w-0 mb-6 break-words bg-white border-0 border-transparent border-solid shadow-soft-xl rounded-2xl bg-clip-border">
               <div className="p-6 pb-0 mb-0 bg-white border-b-0 border-b-solid rounded-t-2xl border-b-transparent">
-                <h6>Users table</h6>
+                <h5 className="text-lg">Users table</h5>
               </div>
               <div className="flex-auto px-0 pt-0 pb-2">
                 <div className="p-0 overflow-x-auto">
@@ -63,146 +93,120 @@ function User() {
                         <th className="px-6 py-3 font-semibold capitalize align-middle bg-transparent border-b border-gray-200 border-solid shadow-none tracking-none whitespace-nowrap text-slate-700 opacity-70"></th>
                       </tr>
                     </thead>
-                    <tbody>
-                      {users.map((user, index) => (
-                        <tr key={index}>
-                          <td
-                            className={`p-2 align-middle bg-transparent ${
-                              index == users.length - 1
-                                ? "border-b-0"
-                                : "border-b"
-                            } whitespace-nowrap shadow-transparent`}
-                          >
-                            <div className="flex px-2 py-1">
-                              <div>
-                                <img
-                                  src={user.image}
-                                  className="inline-flex rounded-xl object-cover items-center justify-center mr-4 text-sm text-white transition-all duration-200 ease-soft-in-out h-9 w-9"
-                                  alt="user1"
-                                />
-                              </div>
-                              <div className="flex flex-col justify-center">
-                                <h6 className="mb-0 text-sm leading-normal">
-                                  {user.name}
-                                </h6>
-                                <p className="mb-0 text-xs leading-tight text-slate-500">
-                                  {user.email}
-                                </p>
-                              </div>
+                    {loading ? (
+                      <tbody>
+                        <tr>
+                          <td>
+                            <div className="p-8 bg-white text-center text-sm text-slate-500">
+                              Loading users...
                             </div>
                           </td>
-                          <td
-                            className={`p-2 align-middle bg-transparent ${
-                              index == users.length - 1
-                                ? "border-b-0"
-                                : "border-b"
-                            } whitespace-nowrap shadow-transparent`}
-                          >
-                            <p className="mb-0 text-xs font-semibold leading-tight">
-                              Programator
-                            </p>
-                            <p className="mb-0 text-xs leading-tight text-slate-500">
-                              Deverloper
-                            </p>
+                          <td>
+                            <div className="p-8 bg-white text-center text-sm text-slate-500">
+                              Loading users...
+                            </div>
                           </td>
-                          <td
-                            className={`p-2 text-sm leading-normal text-center align-middle bg-transparent ${
-                              index == users.length - 1
-                                ? "border-b-0"
-                                : "border-b"
-                            } whitespace-nowrap shadow-transparent`}
-                          >
-                            <span
-                              className={`bg-gradient-to-tl rounded-lg py-1.5 px-2.5 text-xs inline-block whitespace-nowrap text-center align-baseline font-bold uppercase leading-none text-white
-                            ${
-                              user.is_online
-                                ? "from-green-600 to-slate-400"
-                                : "from-slate-600 to-slate-300"
-                            }`}
-                            >
-                              {user.is_online ? "Online" : "Offline"}
-                            </span>
-                          </td>
-                          <td
-                            className={`p-2 align-middle bg-transparent ${
-                              index == users.length - 1
-                                ? "border-b-0"
-                                : "border-b"
-                            } whitespace-nowrap shadow-transparent`}
-                          >
-                            <Link
-                              href={`/dashboard/users/edit?id=${user.id}`}
-                              className="text-xs font-semibold leading-tight text-slate-600"
-                            >
-                              Edit
-                            </Link>
+                          <td>
+                            <div className="p-8 bg-white text-center text-sm text-slate-500">
+                              Loading users...
+                            </div>
                           </td>
                         </tr>
-                      ))}
-                    </tbody>
+                      </tbody>
+                    ) : (
+                      <tbody>
+                        {users.map((user, index) => (
+                          <tr key={index}>
+                            <td
+                              className={`p-2 align-middle bg-transparent ${
+                                index == users.length - 1
+                                  ? "border-b-0"
+                                  : "border-b"
+                              } whitespace-nowrap shadow-transparent`}
+                            >
+                              <div className="flex px-2 py-1">
+                                <div>
+                                  <img
+                                    src={user.image}
+                                    className="inline-flex rounded-xl object-cover items-center justify-center mr-4 text-sm text-white transition-all duration-200 ease-soft-in-out h-9 w-9"
+                                    alt="user1"
+                                  />
+                                </div>
+                                <div className="flex flex-col justify-center">
+                                  <h6 className="mb-0 text-sm leading-normal">
+                                    {user.name}
+                                  </h6>
+                                  <p className="mb-0 text-xs leading-tight text-slate-500">
+                                    {user.email}
+                                  </p>
+                                </div>
+                              </div>
+                            </td>
+                            <td
+                              className={`p-2 align-middle bg-transparent ${
+                                index == users.length - 1
+                                  ? "border-b-0"
+                                  : "border-b"
+                              } whitespace-nowrap shadow-transparent`}
+                            >
+                              <p className="mb-0 text-xs font-semibold leading-tight">
+                                {handleRole(user.role_id)}
+                              </p>
+                              <p className="mb-0 text-xs leading-tight text-slate-500">
+                                {handleRoleColor(user.role_id)}
+                              </p>
+                            </td>
+                            <td
+                              className={`p-2 text-sm leading-normal text-center align-middle bg-transparent ${
+                                index == users.length - 1
+                                  ? "border-b-0"
+                                  : "border-b"
+                              } whitespace-nowrap shadow-transparent`}
+                            >
+                              <span
+                                className={`bg-gradient-to-tl rounded-lg py-1.5 px-2.5 text-xs inline-block whitespace-nowrap text-center align-baseline font-bold uppercase leading-none text-white
+                            ${
+                              user.is_online
+                                ? "from-green-600 to-lime-400"
+                                : "from-slate-600 to-slate-300"
+                            }`}
+                              >
+                                {user.is_online ? "Online" : "Offline"}
+                              </span>
+                            </td>
+                            <td
+                              className={`p-2 align-middle bg-transparent w-auto max-w-max ${
+                                index == users.length - 1
+                                  ? "border-b-0"
+                                  : "border-b"
+                              } whitespace-nowrap shadow-transparent`}
+                            >
+                              <div className="flex gap-2">
+                                <Link
+                                  href={`/dashboard/users/edit?id=${user.id}`}
+                                  className="text-sm px-3 mx-3 py-1 rounded-md bg-white border border-gray-200 hover:shadow"
+                                >
+                                  Edit
+                                </Link>
+                                <Link
+                                  href="#"
+                                  className="text-sm px-3 py-1 rounded-md bg-white border border-red-100 text-red-600 hover:bg-red-50"
+                                >
+                                  Delete
+                                </Link>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    )}
                   </table>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <footer className="pt-4">
-          <div className="w-full px-6 mx-auto">
-            <div className="flex flex-wrap items-center -mx-3 lg:justify-between">
-              <div className="w-full max-w-full px-3 mt-0 mb-6 shrink-0 lg:mb-0 lg:w-1/2 lg:flex-none">
-                <div className="text-sm leading-normal text-center text-slate-600 lg:text-left">
-                  © 2025, made with <i className="fa fa-heart"></i> by
-                  <a
-                    href="https://www.creative-tim.com"
-                    className="font-semibold text-slate-700"
-                    target="_blank"
-                  >
-                    DuongLe
-                  </a>
-                  for a better web.
-                  <span className="w-full"> Distributed by ❤️ ThemeWagon </span>
-                </div>
-              </div>
-              <div className="w-full max-w-full px-3 mt-0 shrink-0 lg:w-1/2 lg:flex-none">
-                <ul className="flex flex-wrap justify-center pl-0 mb-0 list-none lg:justify-end">
-                  <li className="nav-item">
-                    <a
-                      href="#!"
-                      className="block px-4 pt-0 pb-1 text-sm font-normal transition-colors ease-soft-in-out text-slate-600"
-                    >
-                      DuongLe
-                    </a>
-                  </li>
-                  <li className="nav-item">
-                    <a
-                      href="#!"
-                      className="block px-4 pt-0 pb-1 text-sm font-normal transition-colors ease-soft-in-out text-slate-600"
-                    >
-                      About Us
-                    </a>
-                  </li>
-                  <li className="nav-item">
-                    <a
-                      href="#!"
-                      className="block px-4 pt-0 pb-1 text-sm font-normal transition-colors ease-soft-in-out text-slate-600"
-                    >
-                      Blog
-                    </a>
-                  </li>
-                  <li className="nav-item">
-                    <a
-                      href="#!"
-                      className="block px-4 pt-0 pb-1 pr-0 text-sm font-normal transition-colors ease-soft-in-out text-slate-600"
-                      target="_blank"
-                    >
-                      License
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </footer>
+        <Footer />
       </div>
     </>
   );

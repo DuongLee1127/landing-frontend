@@ -3,6 +3,7 @@ import style from "@/styles/login.module.scss";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import bcrypt from "bcryptjs";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -22,6 +23,7 @@ export default function Login() {
 
     if (res.ok) {
       cookieStore.set("token", data.token);
+      cookieStore.set("role", data.role_id.toString());
       if (data.role_id === 2) {
         router.push("/");
       } else {

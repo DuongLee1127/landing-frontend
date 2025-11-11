@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { NextRequest } from "next/server";
 import Cookies from "js-cookie";
+import { apiFetch } from "@/utils/axios";
 
 export default function AccountMenu() {
   const [open, setOpen] = useState(false);
@@ -33,7 +34,7 @@ export default function AccountMenu() {
     const fetchUser = async () => {
       try {
         const token = Cookies.get("token");
-        const res = await fetch("http://localhost:8000/api/user", {
+        const res = await apiFetch("http://localhost:8000/api/user", {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -62,6 +63,7 @@ export default function AccountMenu() {
 
       if (res.ok) {
         Cookies.remove("token");
+        Cookies.remove("role");
         window.location.href = "/login";
       } else {
         console.error("Logout failed:", await res.text());

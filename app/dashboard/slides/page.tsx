@@ -1,391 +1,318 @@
-export default function Slide() {
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import Footer from "@/components/dashboard/footer";
+
+type Slide = {
+  id: string;
+  title: string;
+  image: string; // url
+  active?: boolean;
+};
+
+export default function SlidePage() {
+  const [slides, setSlides] = useState<Slide[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // modal state
+  const [openModal, setOpenModal] = useState(false);
+  const [editing, setEditing] = useState<Slide | null>(null);
+
+  // form state
+  const [title, setTitle] = useState("");
+  const [file, setFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
+  const fileRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    // load slides (replace with real API)
+    async function load() {
+      setLoading(true);
+      // Demo data - replace with fetch('/api/slides')
+      const demo: Slide[] = [
+        {
+          id: "1",
+          title: "Welcome Slide",
+          image: "/images/idea.jpg",
+          active: true,
+        },
+        { id: "2", title: "New Features", image: "/images/ba-la-gi-min.jpeg" },
+        { id: "3", title: "Join Us", image: "/images/IT.jpg" },
+      ];
+      // simulate
+      await new Promise((r) => setTimeout(r, 300));
+      setSlides(demo);
+      setLoading(false);
+    }
+    load();
+  }, []);
+
+  useEffect(() => {
+    if (!file) return setPreview(null);
+    const url = URL.createObjectURL(file);
+    setPreview(url);
+    return () => URL.revokeObjectURL(url);
+  }, [file]);
+
+  function openCreate() {
+    setEditing(null);
+    setTitle("");
+    setFile(null);
+    setPreview(null);
+    setOpenModal(true);
+  }
+
+  function openEdit(s: Slide) {
+    setEditing(s);
+    setTitle(s.title);
+    setFile(null);
+    setPreview(s.image);
+    setOpenModal(true);
+  }
+
+  async function handleSave(e?: React.FormEvent) {
+    if (e) e.preventDefault();
+    // validation
+    if (!title.trim()) {
+      alert("Title is required");
+      return;
+    }
+
+    // If you have an API, upload file and submit formData here.
+    // Example (uncomment & adapt):
+    // const fd = new FormData();
+    // if (file) fd.append('image', file);
+    // fd.append('title', title);
+    // const method = editing ? 'PUT' : 'POST';
+    // const url = editing ? `/api/slides/${editing.id}` : '/api/slides';
+    // const res = await fetch(url, { method, body: fd });
+
+    // For demo, update local state:
+    if (editing) {
+      setSlides((prev) =>
+        prev.map((p) =>
+          p.id === editing.id ? { ...p, title, image: preview ?? p.image } : p
+        )
+      );
+    } else {
+      const newSlide: Slide = {
+        id: Date.now().toString(),
+        title,
+        image: preview ?? "/images/placeholder-slide.jpg",
+      };
+      setSlides((prev) => [newSlide, ...prev]);
+    }
+
+    setOpenModal(false);
+  }
+
+  async function handleDelete(id: string) {
+    if (!confirm("Delete this slide? This action cannot be undone.")) return;
+    // call your API to delete
+    // await fetch(`/api/slides/${id}`, { method: 'DELETE' })
+    setSlides((prev) => prev.filter((s) => s.id !== id));
+  }
+
   return (
     <>
-      <div className="w-full px-6 py-6 mx-auto">
-        <div className="flex flex-wrap -mx-3">
-          <div className="flex-none w-full max-w-full px-3">
-            <div className="relative flex flex-col min-w-0 mb-6 break-words bg-white border-0 border-transparent border-solid shadow-soft-xl rounded-2xl bg-clip-border">
-              <div className="p-6 pb-0 mb-0 bg-white border-b-0 border-b-solid rounded-t-2xl border-b-transparent">
-                <h6>Authors table</h6>
-              </div>
-              <div className="flex-auto px-0 pt-0 pb-2">
-                <div className="p-0 overflow-x-auto">
-                  <table className="items-center w-full mb-0 align-top border-gray-200 text-slate-500">
-                    <thead className="align-bottom">
-                      <tr>
-                        <th className="px-6 py-3 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">
-                          Author
-                        </th>
-                        <th className="px-6 py-3 pl-2 font-bold text-left uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">
-                          Function
-                        </th>
-                        <th className="px-6 py-3 font-bold text-center uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">
-                          Status
-                        </th>
-                        <th className="px-6 py-3 font-bold text-center uppercase align-middle bg-transparent border-b border-gray-200 shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">
-                          Employed
-                        </th>
-                        <th className="px-6 py-3 font-semibold capitalize align-middle bg-transparent border-b border-gray-200 border-solid shadow-none tracking-none whitespace-nowrap text-slate-400 opacity-70"></th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td className="p-2 align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
-                          <div className="flex px-2 py-1">
-                            <div>
-                              <img
-                                src="../assets/img/team-2.jpg"
-                                className="inline-flex items-center justify-center mr-4 text-sm text-white transition-all duration-200 ease-soft-in-out h-9 w-9 rounded-xl"
-                                alt="user1"
-                              />
-                            </div>
-                            <div className="flex flex-col justify-center">
-                              <h6 className="mb-0 text-sm leading-normal">
-                                John Michael
-                              </h6>
-                              <p className="mb-0 text-xs leading-tight text-slate-400">
-                                john@creative-tim.com
-                              </p>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="p-2 align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
-                          <p className="mb-0 text-xs font-semibold leading-tight">
-                            Manager
-                          </p>
-                          <p className="mb-0 text-xs leading-tight text-slate-400">
-                            Organization
-                          </p>
-                        </td>
-                        <td className="p-2 text-sm leading-normal text-center align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
-                          <span className="bg-gradient-to-tl from-green-600 to-lime-400 px-2.5 text-xs rounded-1.8 py-1.4 inline-block whitespace-nowrap text-center align-baseline font-bold uppercase leading-none text-white">
-                            Online
-                          </span>
-                        </td>
-                        <td className="p-2 text-center align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
-                          <span className="text-xs font-semibold leading-tight text-slate-400">
-                            23/04/18
-                          </span>
-                        </td>
-                        <td className="p-2 align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
-                          <a
-                            href="javascript:;"
-                            className="text-xs font-semibold leading-tight text-slate-400"
-                          >
-                            {" "}
-                            Edit{" "}
-                          </a>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="p-2 align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
-                          <div className="flex px-2 py-1">
-                            <div>
-                              <img
-                                src="../assets/img/team-3.jpg"
-                                className="inline-flex items-center justify-center mr-4 text-sm text-white transition-all duration-200 ease-soft-in-out h-9 w-9 rounded-xl"
-                                alt="user2"
-                              />
-                            </div>
-                            <div className="flex flex-col justify-center">
-                              <h6 className="mb-0 text-sm leading-normal">
-                                Alexa Liras
-                              </h6>
-                              <p className="mb-0 text-xs leading-tight text-slate-400">
-                                alexa@creative-tim.com
-                              </p>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="p-2 align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
-                          <p className="mb-0 text-xs font-semibold leading-tight">
-                            Programator
-                          </p>
-                          <p className="mb-0 text-xs leading-tight text-slate-400">
-                            Developer
-                          </p>
-                        </td>
-                        <td className="p-2 text-sm leading-normal text-center align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
-                          <span className="bg-gradient-to-tl from-slate-600 to-slate-300 px-2.5 text-xs rounded-1.8 py-1.4 inline-block whitespace-nowrap text-center align-baseline font-bold uppercase leading-none text-white">
-                            Offline
-                          </span>
-                        </td>
-                        <td className="p-2 text-center align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
-                          <span className="text-xs font-semibold leading-tight text-slate-400">
-                            11/01/19
-                          </span>
-                        </td>
-                        <td className="p-2 align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
-                          <a
-                            href="javascript:;"
-                            className="text-xs font-semibold leading-tight text-slate-400"
-                          >
-                            {" "}
-                            Edit{" "}
-                          </a>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="p-2 align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
-                          <div className="flex px-2 py-1">
-                            <div>
-                              <img
-                                src="../assets/img/team-4.jpg"
-                                className="inline-flex items-center justify-center mr-4 text-sm text-white transition-all duration-200 ease-soft-in-out h-9 w-9 rounded-xl"
-                                alt="user3"
-                              />
-                            </div>
-                            <div className="flex flex-col justify-center">
-                              <h6 className="mb-0 text-sm leading-normal">
-                                Laurent Perrier
-                              </h6>
-                              <p className="mb-0 text-xs leading-tight text-slate-400">
-                                laurent@creative-tim.com
-                              </p>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="p-2 align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
-                          <p className="mb-0 text-xs font-semibold leading-tight">
-                            Executive
-                          </p>
-                          <p className="mb-0 text-xs leading-tight text-slate-400">
-                            Projects
-                          </p>
-                        </td>
-                        <td className="p-2 text-sm leading-normal text-center align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
-                          <span className="bg-gradient-to-tl from-green-600 to-lime-400 px-2.5 text-xs rounded-1.8 py-1.4 inline-block whitespace-nowrap text-center align-baseline font-bold uppercase leading-none text-white">
-                            Online
-                          </span>
-                        </td>
-                        <td className="p-2 text-center align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
-                          <span className="text-xs font-semibold leading-tight text-slate-400">
-                            19/09/17
-                          </span>
-                        </td>
-                        <td className="p-2 align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
-                          <a
-                            href="javascript:;"
-                            className="text-xs font-semibold leading-tight text-slate-400"
-                          >
-                            {" "}
-                            Edit{" "}
-                          </a>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="p-2 align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
-                          <div className="flex px-2 py-1">
-                            <div>
-                              <img
-                                src="../assets/img/team-3.jpg"
-                                className="inline-flex items-center justify-center mr-4 text-sm text-white transition-all duration-200 ease-soft-in-out h-9 w-9 rounded-xl"
-                                alt="user4"
-                              />
-                            </div>
-                            <div className="flex flex-col justify-center">
-                              <h6 className="mb-0 text-sm leading-normal">
-                                Michael Levi
-                              </h6>
-                              <p className="mb-0 text-xs leading-tight text-slate-400">
-                                michael@creative-tim.com
-                              </p>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="p-2 align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
-                          <p className="mb-0 text-xs font-semibold leading-tight">
-                            Programator
-                          </p>
-                          <p className="mb-0 text-xs leading-tight text-slate-400">
-                            Developer
-                          </p>
-                        </td>
-                        <td className="p-2 text-sm leading-normal text-center align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
-                          <span className="bg-gradient-to-tl from-green-600 to-lime-400 px-2.5 text-xs rounded-1.8 py-1.4 inline-block whitespace-nowrap text-center align-baseline font-bold uppercase leading-none text-white">
-                            Online
-                          </span>
-                        </td>
-                        <td className="p-2 text-center align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
-                          <span className="text-xs font-semibold leading-tight text-slate-400">
-                            24/12/08
-                          </span>
-                        </td>
-                        <td className="p-2 align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
-                          <a
-                            href="javascript:;"
-                            className="text-xs font-semibold leading-tight text-slate-400"
-                          >
-                            {" "}
-                            Edit{" "}
-                          </a>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="p-2 align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
-                          <div className="flex px-2 py-1">
-                            <div>
-                              <img
-                                src="../assets/img/team-2.jpg"
-                                className="inline-flex items-center justify-center mr-4 text-sm text-white transition-all duration-200 ease-soft-in-out h-9 w-9 rounded-xl"
-                                alt="user5"
-                              />
-                            </div>
-                            <div className="flex flex-col justify-center">
-                              <h6 className="mb-0 text-sm leading-normal">
-                                Richard Gran
-                              </h6>
-                              <p className="mb-0 text-xs leading-tight text-slate-400">
-                                richard@creative-tim.com
-                              </p>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="p-2 align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
-                          <p className="mb-0 text-xs font-semibold leading-tight">
-                            Manager
-                          </p>
-                          <p className="mb-0 text-xs leading-tight text-slate-400">
-                            Executive
-                          </p>
-                        </td>
-                        <td className="p-2 text-sm leading-normal text-center align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
-                          <span className="bg-gradient-to-tl from-slate-600 to-slate-300 px-2.5 text-xs rounded-1.8 py-1.4 inline-block whitespace-nowrap text-center align-baseline font-bold uppercase leading-none text-white">
-                            Offline
-                          </span>
-                        </td>
-                        <td className="p-2 text-center align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
-                          <span className="text-xs font-semibold leading-tight text-slate-400">
-                            04/10/21
-                          </span>
-                        </td>
-                        <td className="p-2 align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
-                          <a
-                            href="javascript:;"
-                            className="text-xs font-semibold leading-tight text-slate-400"
-                          >
-                            {" "}
-                            Edit{" "}
-                          </a>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="p-2 align-middle bg-transparent border-b-0 whitespace-nowrap shadow-transparent">
-                          <div className="flex px-2 py-1">
-                            <div>
-                              <img
-                                src="../assets/img/team-4.jpg"
-                                className="inline-flex items-center justify-center mr-4 text-sm text-white transition-all duration-200 ease-soft-in-out h-9 w-9 rounded-xl"
-                                alt="user6"
-                              />
-                            </div>
-                            <div className="flex flex-col justify-center">
-                              <h6 className="mb-0 text-sm leading-normal">
-                                Miriam Eric
-                              </h6>
-                              <p className="mb-0 text-xs leading-tight text-slate-400">
-                                miriam@creative-tim.com
-                              </p>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="p-2 align-middle bg-transparent border-b-0 whitespace-nowrap shadow-transparent">
-                          <p className="mb-0 text-xs font-semibold leading-tight">
-                            Programtor
-                          </p>
-                          <p className="mb-0 text-xs leading-tight text-slate-400">
-                            Developer
-                          </p>
-                        </td>
-                        <td className="p-2 text-sm leading-normal text-center align-middle bg-transparent border-b-0 whitespace-nowrap shadow-transparent">
-                          <span className="bg-gradient-to-tl from-slate-600 to-slate-300 px-2.5 text-xs rounded-1.8 py-1.4 inline-block whitespace-nowrap text-center align-baseline font-bold uppercase leading-none text-white">
-                            Offline
-                          </span>
-                        </td>
-                        <td className="p-2 text-center align-middle bg-transparent border-b-0 whitespace-nowrap shadow-transparent">
-                          <span className="text-xs font-semibold leading-tight text-slate-400">
-                            14/09/20
-                          </span>
-                        </td>
-                        <td className="p-2 align-middle bg-transparent border-b-0 whitespace-nowrap shadow-transparent">
-                          <a
-                            href="javascript:;"
-                            className="text-xs font-semibold leading-tight text-slate-400"
-                          >
-                            {" "}
-                            Edit{" "}
-                          </a>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
+      <div className="w-full px-6 py-6 mx-auto bg-white p-4 rounded-lg shadow">
+        <div className="flex items-center justify-between mb-6">
+          <h5 className="text-lg">Slides</h5>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={openCreate}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 shadow"
+            >
+              + Add Slide
+            </button>
           </div>
         </div>
-        <footer className="pt-4">
-          <div className="w-full px-6 mx-auto">
-            <div className="flex flex-wrap items-center -mx-3 lg:justify-between">
-              <div className="w-full max-w-full px-3 mt-0 mb-6 shrink-0 lg:mb-0 lg:w-1/2 lg:flex-none">
-                <div className="text-sm leading-normal text-center text-slate-500 lg:text-left">
-                  ©
-                  <script>
-                    document.write(new Date().getFullYear() + ",");
-                  </script>
-                  made with <i className="fa fa-heart"></i> by
-                  <a
-                    href="https://www.creative-tim.com"
-                    className="font-semibold text-slate-700"
-                    target="_blank"
-                  >
-                    DuongLe
-                  </a>
-                  for a better web.
-                  <span className="w-full"> Distributed by ❤️ ThemeWagon </span>
+
+        <div className="grid gap-4">
+          {loading ? (
+            <div className="p-8 bg-white rounded-lg shadow text-center text-sm text-slate-500">
+              Loading slides...
+            </div>
+          ) : slides.length === 0 ? (
+            <div className="p-8 bg-white rounded-lg shadow text-center text-sm text-slate-500">
+              No slides yet. Click Add Slide to create one.
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {slides.map((s) => (
+                <div
+                  key={s.id}
+                  className="bg-white rounded-xl border border-slate-100 shadow-md p-3 flex flex-col overflow-hidden"
+                >
+                  <div className="relative w-full h-44 rounded-lg overflow-hidden bg-slate-100">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={s.image}
+                      alt={s.title}
+                      className="w-full h-full object-cover"
+                    />
+                    {s.active && (
+                      <span className="absolute top-3 left-3 bg-emerald-500 text-white text-xs px-2 py-0.5 rounded-full shadow">
+                        Active
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="mt-3 flex-1">
+                    <h5 className="text-sm font-semibold text-slate-800 truncate">
+                      {s.title}
+                    </h5>
+                  </div>
+
+                  <div className="mt-3 flex items-center justify-between gap-2">
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => openEdit(s)}
+                        className="text-sm px-3 py-1 rounded-md bg-white border border-gray-200 hover:shadow"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(s.id)}
+                        className="text-sm px-3 py-1 rounded-md bg-white border border-red-100 text-red-600 hover:bg-red-50"
+                      >
+                        Delete
+                      </button>
+                    </div>
+
+                    <button
+                      onClick={() =>
+                        setSlides((prev) =>
+                          prev.map((p) =>
+                            p.id === s.id ? { ...p, active: !p.active } : p
+                          )
+                        )
+                      }
+                      className={`text-sm px-3 py-1 rounded-md ${
+                        s.active
+                          ? "bg-emerald-50 text-emerald-700 border border-emerald-100"
+                          : "bg-white border border-gray-200"
+                      }`}
+                    >
+                      {s.active ? "Disable" : "Enable"}
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* modal */}
+        {openModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div
+              className="absolute inset-0 bg-black/40"
+              onClick={() => setOpenModal(false)}
+            />
+            <form
+              onSubmit={handleSave}
+              className="relative bg-white rounded-2xl shadow-xl w-full max-w-2xl p-6 z-10"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold">
+                  {editing ? "Edit Slide" : "Create Slide"}
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => setOpenModal(false)}
+                  className="text-slate-500 hover:text-slate-700"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="flex flex-col items-center md:items-start gap-3">
+                  <div className="w-48 h-32 rounded-lg overflow-hidden bg-slate-100 border border-gray-100">
+                    {preview ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={preview}
+                        alt="preview"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-slate-400">
+                        No image
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => fileRef.current?.click()}
+                      className="px-3 py-1 rounded-md bg-indigo-600 text-white text-sm"
+                    >
+                      Choose image
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setFile(null);
+                        setPreview(null);
+                        if (fileRef.current) fileRef.current.value = "";
+                      }}
+                      className="px-3 py-1 rounded-md bg-gray-100 text-sm"
+                    >
+                      Remove
+                    </button>
+                  </div>
+
+                  <input
+                    ref={fileRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(ev) => {
+                      const f = ev.target.files?.[0] ?? null;
+                      if (f) setFile(f);
+                    }}
+                  />
+                  <p className="text-xs text-slate-400 mt-1">
+                    JPG, PNG recommended
+                  </p>
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="block text-xs font-semibold text-slate-600 mb-2">
+                    Title
+                  </label>
+                  <input
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-200"
+                    placeholder="Slide title"
+                  />
+
+                  <div className="flex items-center justify-end gap-2 mt-6">
+                    <button
+                      type="button"
+                      onClick={() => setOpenModal(false)}
+                      className="px-4 py-2 rounded-md bg-white border border-gray-200"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-4 py-2 rounded-md bg-indigo-600 text-white"
+                    >
+                      {editing ? "Save changes" : "Create slide"}
+                    </button>
+                  </div>
                 </div>
               </div>
-              <div className="w-full max-w-full px-3 mt-0 shrink-0 lg:w-1/2 lg:flex-none">
-                <ul className="flex flex-wrap justify-center pl-0 mb-0 list-none lg:justify-end">
-                  <li className="nav-item">
-                    <a
-                      href="#!"
-                      className="block px-4 pt-0 pb-1 text-sm font-normal transition-colors ease-soft-in-out text-slate-500"
-                    >
-                      DuongLe
-                    </a>
-                  </li>
-                  <li className="nav-item">
-                    <a
-                      href="#!"
-                      className="block px-4 pt-0 pb-1 text-sm font-normal transition-colors ease-soft-in-out text-slate-500"
-                    >
-                      About Us
-                    </a>
-                  </li>
-                  <li className="nav-item">
-                    <a
-                      href="#!"
-                      className="block px-4 pt-0 pb-1 text-sm font-normal transition-colors ease-soft-in-out text-slate-500"
-                    >
-                      Blog
-                    </a>
-                  </li>
-                  <li className="nav-item">
-                    <a
-                      href="#!"
-                      className="block px-4 pt-0 pb-1 pr-0 text-sm font-normal transition-colors ease-soft-in-out text-slate-500"
-                      target="_blank"
-                    >
-                      License
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </div>
+            </form>
           </div>
-        </footer>
+        )}
       </div>
+      <Footer />
     </>
   );
 }

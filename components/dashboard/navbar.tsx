@@ -5,13 +5,14 @@ import { links } from "@/routes/link";
 import { usePathname } from "next/navigation";
 
 export default function Navbar() {
-  const obj = links.filter((link) => link.href === usePathname());
+  const path = usePathname().split("/");
+
   return (
     <header className="flex items-center justify-between mb-6">
       <div>
-        <div className="text-xs text-gray-600">Pages / {obj[0]?.name}</div>
+        <div className="text-xs text-gray-600">Pages / {path[2]}</div>
         <div className="text-sm font-semibold text-gray-800">
-          {obj[0]?.name}
+          {path[path.length - 1]}
         </div>
       </div>
 

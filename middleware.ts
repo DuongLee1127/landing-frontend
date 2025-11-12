@@ -10,6 +10,10 @@ export function middleware(request: NextRequest) {
   if (role != "1" && role != "3") {
     return NextResponse.redirect(new URL("/", request.url));
   }
+  if (role == "3" && request.nextUrl.pathname.startsWith("/dashboard/users")) {
+    // alert("Editors are not allowed to access the Users page.");
+    return NextResponse.redirect(new URL("/dashboard", request.url));
+  }
 
   if (!token) {
     const handleLogout = async () => {

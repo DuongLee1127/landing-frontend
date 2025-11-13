@@ -2,11 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 import Footer from "@/components/dashboard/footer";
+import Cookies from "js-cookie";
+const token = Cookies.get("token") || "";
 
 type Slide = {
   id: string;
   title: string;
-  image: string; // url
+  url: string; // url
   active?: boolean;
 };
 
@@ -28,20 +30,16 @@ export default function SlidePage() {
     // load slides (replace with real API)
     async function load() {
       setLoading(true);
-      // Demo data - replace with fetch('/api/slides')
-      const demo: Slide[] = [
-        {
-          id: "1",
-          title: "Welcome Slide",
-          image: "/images/idea.jpg",
-          active: true,
+
+      const response = await fetch("http://localhost:8000/api/slides", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-        { id: "2", title: "New Features", image: "/images/ba-la-gi-min.jpeg" },
-        { id: "3", title: "Join Us", image: "/images/IT.jpg" },
-      ];
-      // simulate
-      await new Promise((r) => setTimeout(r, 300));
-      setSlides(demo);
+      });
+      const data = await response.json();
+      setSlides(data);
+      console.log(data);
       setLoading(false);
     }
     load();
@@ -66,13 +64,12 @@ export default function SlidePage() {
     setEditing(s);
     setTitle(s.title);
     setFile(null);
-    setPreview(s.image);
+    setPreview(s.url);
     setOpenModal(true);
   }
 
   async function handleSave(e?: React.FormEvent) {
     if (e) e.preventDefault();
-    // validation
     if (!title.trim()) {
       alert("Title is required");
       return;
@@ -91,14 +88,14 @@ export default function SlidePage() {
     if (editing) {
       setSlides((prev) =>
         prev.map((p) =>
-          p.id === editing.id ? { ...p, title, image: preview ?? p.image } : p
+          p.id === editing.id ? { ...p, title, image: preview ?? p.url } : p
         )
       );
     } else {
       const newSlide: Slide = {
         id: Date.now().toString(),
         title,
-        image: preview ?? "/images/placeholder-slide.jpg",
+        url: preview ?? "/images/placeholder-slide.jpg",
       };
       setSlides((prev) => [newSlide, ...prev]);
     }
@@ -147,7 +144,7 @@ export default function SlidePage() {
                   <div className="relative w-full h-44 rounded-lg overflow-hidden bg-slate-100">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src={s.image}
+                      src={s.url}
                       alt={s.title}
                       className="w-full h-full object-cover"
                     />

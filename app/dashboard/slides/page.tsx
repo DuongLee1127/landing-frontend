@@ -3,11 +3,12 @@
 import { useEffect, useRef, useState } from "react";
 import Footer from "@/components/dashboard/footer";
 import Cookies from "js-cookie";
+import useSWR, { mutate } from "swr";
 const token = Cookies.get("token") || "";
 
 type Slide = {
   id: string;
-  title: string;
+  user_name: string;
   url: string; // url
   active?: boolean;
 };
@@ -25,9 +26,11 @@ export default function SlidePage() {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement | null>(null);
+  const [loadCreate, setLoadCreate] = useState(false);
+
+  const [fetchSlides, setFetchSlides] = useState(0);
 
   useEffect(() => {
-    // load slides (replace with real API)
     async function load() {
       setLoading(true);
 
@@ -43,7 +46,7 @@ export default function SlidePage() {
       setLoading(false);
     }
     load();
-  }, []);
+  }, [fetchSlides]);
 
   useEffect(() => {
     if (!file) return setPreview(null);
@@ -62,28 +65,35 @@ export default function SlidePage() {
 
   function openEdit(s: Slide) {
     setEditing(s);
-    setTitle(s.title);
+    setTitle(s.user_name);
     setFile(null);
     setPreview(s.url);
     setOpenModal(true);
   }
 
   async function handleSave(e?: React.FormEvent) {
+    setLoadCreate(true);
     if (e) e.preventDefault();
-    if (!title.trim()) {
-      alert("Title is required");
+    const fd = new FormData();
+    if (file) fd.append("image", file);
+    const response = await fetch("http://localhost:8000/api/add-slide", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: fd,
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      console.log("Error saving slide: ", data.error);
+      alert(data.error);
       return;
     }
-
-    // If you have an API, upload file and submit formData here.
-    // Example (uncomment & adapt):
-    // const fd = new FormData();
-    // if (file) fd.append('image', file);
-    // fd.append('title', title);
-    // const method = editing ? 'PUT' : 'POST';
-    // const url = editing ? `/api/slides/${editing.id}` : '/api/slides';
-    // const res = await fetch(url, { method, body: fd });
-
+    // setFetchSlides(fetchSlides + 1);
+    console.log("Saved slide: ", data);
+    setSlides((prev) => [data, ...prev]);
+    setLoadCreate(false);
     // For demo, update local state:
     if (editing) {
       setSlides((prev) =>
@@ -91,13 +101,6 @@ export default function SlidePage() {
           p.id === editing.id ? { ...p, title, image: preview ?? p.url } : p
         )
       );
-    } else {
-      const newSlide: Slide = {
-        id: Date.now().toString(),
-        title,
-        url: preview ?? "/images/placeholder-slide.jpg",
-      };
-      setSlides((prev) => [newSlide, ...prev]);
     }
 
     setOpenModal(false);
@@ -105,8 +108,18 @@ export default function SlidePage() {
 
   async function handleDelete(id: string) {
     if (!confirm("Delete this slide? This action cannot be undone.")) return;
-    // call your API to delete
-    // await fetch(`/api/slides/${id}`, { method: 'DELETE' })
+    const res = await fetch(`http://localhost:8000/api/delete/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!res.ok) {
+      const data = await res.json();
+      alert(data.error || "Error deleting slide");
+      return;
+    }
     setSlides((prev) => prev.filter((s) => s.id !== id));
   }
 
@@ -120,12 +133,12 @@ export default function SlidePage() {
               onClick={openCreate}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 shadow"
             >
-              + Add Slide
+              Add Slide
             </button>
           </div>
         </div>
 
-        <div className="grid gap-4">
+        <div className="grid gap-4 max-h-[650px] overflow-y-auto pr-2">
           {loading ? (
             <div className="p-8 bg-white rounded-lg shadow text-center text-sm text-slate-500">
               Loading slides...
@@ -136,16 +149,15 @@ export default function SlidePage() {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {slides.map((s) => (
+              {slides.map((s, index) => (
                 <div
-                  key={s.id}
-                  className="bg-white rounded-xl border border-slate-100 shadow-md p-3 flex flex-col overflow-hidden"
+                  key={index}
+                  className="bg-white rounded-xl border border-slate-100 shadow-md p-3 flex flex-col overflow-hidden hover:shadow-lg transition"
                 >
                   <div className="relative w-full h-44 rounded-lg overflow-hidden bg-slate-100">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={s.url}
-                      alt={s.title}
+                      alt={s.user_name}
                       className="w-full h-full object-cover"
                     />
                     {s.active && (
@@ -157,21 +169,21 @@ export default function SlidePage() {
 
                   <div className="mt-3 flex-1">
                     <h5 className="text-sm font-semibold text-slate-800 truncate">
-                      {s.title}
+                      {s.user_name}
                     </h5>
                   </div>
 
-                  <div className="mt-3 flex items-center justify-between gap-2">
+                  <div className="mt-3 flex flex-col gap-2">
                     <div className="flex gap-2">
                       <button
                         onClick={() => openEdit(s)}
-                        className="text-sm px-3 py-1 rounded-md bg-white border border-gray-200 hover:shadow"
+                        className="flex-1 text-xs px-2 py-1.5 rounded-md bg-indigo-50 text-indigo-600 border border-indigo-100 hover:bg-indigo-100 transition font-medium"
                       >
                         Edit
                       </button>
                       <button
                         onClick={() => handleDelete(s.id)}
-                        className="text-sm px-3 py-1 rounded-md bg-white border border-red-100 text-red-600 hover:bg-red-50"
+                        className="flex-1 text-xs px-2 py-1.5 rounded-md bg-red-50 text-red-600 border border-red-100 hover:bg-red-100 transition font-medium"
                       >
                         Delete
                       </button>
@@ -185,10 +197,10 @@ export default function SlidePage() {
                           )
                         )
                       }
-                      className={`text-sm px-3 py-1 rounded-md ${
+                      className={`text-xs px-2 py-1.5 rounded-md font-medium transition ${
                         s.active
-                          ? "bg-emerald-50 text-emerald-700 border border-emerald-100"
-                          : "bg-white border border-gray-200"
+                          ? "bg-emerald-50 text-emerald-700 border border-emerald-100 hover:bg-emerald-100"
+                          : "bg-slate-50 text-slate-700 border border-slate-200 hover:bg-slate-100"
                       }`}
                     >
                       {s.active ? "Disable" : "Enable"}
@@ -209,24 +221,22 @@ export default function SlidePage() {
             />
             <form
               onSubmit={handleSave}
-              className="relative bg-white rounded-2xl shadow-xl w-full max-w-2xl p-6 z-10"
+              className="relative bg-white rounded-2xl shadow-xl w-full max-w-2xl p-8 z-10"
             >
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold">
-                  {editing ? "Edit Slide" : "Create Slide"}
-                </h3>
+              <div className="flex items-center justify-end mb-6">
                 <button
                   type="button"
                   onClick={() => setOpenModal(false)}
-                  className="text-slate-500 hover:text-slate-700"
+                  className="text-slate-400 hover:text-slate-600 text-2xl font-light"
                 >
                   ✕
                 </button>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="flex flex-col items-center md:items-start gap-3">
-                  <div className="w-48 h-32 rounded-lg overflow-hidden bg-slate-100 border border-gray-100">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {/* preview column */}
+                <div className="flex flex-col items-center gap-4">
+                  <div className="w-full aspect-video rounded-xl overflow-hidden bg-gradient-to-br from-slate-100 to-slate-50 border border-slate-200 flex items-center justify-center shadow-sm">
                     {preview ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
@@ -235,19 +245,41 @@ export default function SlidePage() {
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-slate-400">
-                        No image
+                      <div className="flex flex-col items-center justify-center gap-2">
+                        <svg
+                          width="48"
+                          height="48"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          className="text-slate-300"
+                        >
+                          <path
+                            d="M4 6h16M4 6a2 2 0 012-2h12a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6z"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                          />
+                          <circle cx="10" cy="11" r="2" fill="currentColor" />
+                          <path
+                            d="M4 15l4-4 8 8"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                        <span className="text-sm text-slate-400">No image</span>
                       </div>
                     )}
                   </div>
 
-                  <div className="flex gap-2">
+                  <div className="w-full flex gap-2">
                     <button
                       type="button"
                       onClick={() => fileRef.current?.click()}
-                      className="px-3 py-1 rounded-md bg-indigo-600 text-white text-sm"
+                      className="flex-1 px-4 py-2.5 rounded-lg bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 transition shadow-sm"
                     >
-                      Choose image
+                      Upload Image
                     </button>
                     <button
                       type="button"
@@ -256,7 +288,7 @@ export default function SlidePage() {
                         setPreview(null);
                         if (fileRef.current) fileRef.current.value = "";
                       }}
-                      className="px-3 py-1 rounded-md bg-gray-100 text-sm"
+                      className="flex-1 px-4 py-2.5 rounded-lg bg-slate-100 text-slate-700 text-sm font-semibold hover:bg-slate-200 transition"
                     >
                       Remove
                     </button>
@@ -272,35 +304,37 @@ export default function SlidePage() {
                       if (f) setFile(f);
                     }}
                   />
-                  <p className="text-xs text-slate-400 mt-1">
-                    JPG, PNG recommended
+                  <p className="text-xs text-slate-400">
+                    JPG, PNG (max 2MB). Recommended: 1920x1080px
                   </p>
                 </div>
 
-                <div className="md:col-span-2">
-                  <label className="block text-xs font-semibold text-slate-600 mb-2">
-                    Title
-                  </label>
-                  <input
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-200"
-                    placeholder="Slide title"
-                  />
-
-                  <div className="flex items-center justify-end gap-2 mt-6">
+                {/* form column */}
+                <div className="flex flex-col justify-center items-center gap-6">
+                  <div className="flex items-center justify-end gap-3 w-full">
                     <button
                       type="button"
                       onClick={() => setOpenModal(false)}
-                      className="px-4 py-2 rounded-md bg-white border border-gray-200"
+                      className="px-5 py-2.5 rounded-lg border border-slate-200 text-slate-700 font-medium hover:bg-slate-50 transition"
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
-                      className="px-4 py-2 rounded-md bg-indigo-600 text-white"
+                      disabled={loadCreate || !file}
+                      className={`px-5 py-2.5 rounded-lg text-white font-medium transition shadow-sm ${
+                        loadCreate || !file
+                          ? "bg-slate-300 cursor-not-allowed"
+                          : "bg-indigo-600 hover:bg-indigo-700"
+                      }`}
                     >
-                      {editing ? "Save changes" : "Create slide"}
+                      {loadCreate
+                        ? editing
+                          ? "Updating..."
+                          : "Creating..."
+                        : editing
+                        ? "Save Changes"
+                        : "Create Slide"}
                     </button>
                   </div>
                 </div>

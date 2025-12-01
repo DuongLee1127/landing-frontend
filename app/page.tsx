@@ -41,7 +41,7 @@ export default function Body() {
                   <div
                     key={i}
                     className={`${style["slide"]} ${
-                      i === index ? "active" : ""
+                      i === index ? style["active"] : ""
                     }`}
                   >
                     <img src={image} alt={`Slide ${index}`} />

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Footer from "@/components/dashboard/footer";
 import Cookies from "js-cookie";
 import useSWR, { mutate } from "swr";
+import { join } from "path";
 const token = Cookies.get("token") || "";
 
 type Slide = {
@@ -22,7 +23,6 @@ export default function SlidePage() {
   const [editing, setEditing] = useState<Slide | null>(null);
 
   // form state
-  const [title, setTitle] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement | null>(null);
@@ -57,7 +57,6 @@ export default function SlidePage() {
 
   function openCreate() {
     setEditing(null);
-    setTitle("");
     setFile(null);
     setPreview(null);
     setOpenModal(true);
@@ -65,7 +64,6 @@ export default function SlidePage() {
 
   function openEdit(s: Slide) {
     setEditing(s);
-    setTitle(s.user_name);
     setFile(null);
     setPreview(s.url);
     setOpenModal(true);
@@ -76,32 +74,45 @@ export default function SlidePage() {
     if (e) e.preventDefault();
     const fd = new FormData();
     if (file) fd.append("image", file);
-    const response = await fetch("http://localhost:8000/api/add-slide", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: fd,
-    });
-
-    const data = await response.json();
-    if (!response.ok) {
-      console.log("Error saving slide: ", data.error);
-      alert(data.error);
-      return;
-    }
-    // setFetchSlides(fetchSlides + 1);
-    console.log("Saved slide: ", data);
-    setSlides((prev) => [data, ...prev]);
-    setLoadCreate(false);
-    // For demo, update local state:
     if (editing) {
-      setSlides((prev) =>
-        prev.map((p) =>
-          p.id === editing.id ? { ...p, title, image: preview ?? p.url } : p
-        )
+      const response = await fetch(
+        `http://localhost:8000/api/update-slide/${editing.id}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: fd,
+        }
       );
+
+      const data = await response.json();
+      console.log(data);
+      if (!response.ok) {
+        console.log("Error saving slide: ", data.error);
+        alert(data.error);
+        return;
+      }
+      setFetchSlides(fetchSlides + 1);
+      setSlides((prev) => [...prev]);
+    } else {
+      const response = await fetch("http://localhost:8000/api/add-slide", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: fd,
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        console.log("Error saving slide: ", data.error);
+        alert(data.error);
+        return;
+      }
+      setSlides((prev) => [data, ...prev]);
     }
+    setLoadCreate(false);
 
     setOpenModal(false);
   }
@@ -236,7 +247,10 @@ export default function SlidePage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* preview column */}
                 <div className="flex flex-col items-center gap-4">
-                  <div className="w-full aspect-video rounded-xl overflow-hidden bg-gradient-to-br from-slate-100 to-slate-50 border border-slate-200 flex items-center justify-center shadow-sm">
+                  <div
+                    className="w-full aspect-video rounded-xl overflow-hidden bg-gradient-to-br from-slate-100 to-slate-50 border border-slate-200 flex items-center justify-center shadow-sm cursor-pointer"
+                    onClick={() => fileRef.current?.click()}
+                  >
                     {preview ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img

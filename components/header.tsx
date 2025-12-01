@@ -7,7 +7,7 @@ function Header() {
   return (
     <header>
       <nav>
-        <div className={style.logo}>whitepace</div>
+        <div className={style["logo"]}>whitepace</div>
         <div className={style["nav-list"]}>
           <div className={style["nav-item"]}>Product</div>
           <div className={style["nav-item"]}>Solutions</div>

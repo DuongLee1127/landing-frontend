@@ -5,26 +5,20 @@ import AppFooter from "@/components/footer";
 import style from "@/styles/style.module.scss";
 import { useEffect, useState } from "react";
 
-const images = [
+const slides = [
   "/images/ba-la-gi-min.jpeg",
   "/images/idea.jpg",
   "/images/IT.jpg ",
 ];
 
 export default function Body() {
-  const [current, setCurrent] = useState(0);
-  const [is_next, setIs_Next] = useState(true);
+  const [index, setIndex] = useState(0);
+  console.log(style);
 
-  const handlePrev = () => {
-    setCurrent((prev) => (prev + 1) % images.length);
-    setIs_Next(true);
-  };
+  const next = () => setIndex((prev) => (prev + 1) % slides.length);
 
-  const handleNext = () => {
-    setCurrent((prev) => (prev - 1 + images.length) % images.length);
-    setIs_Next(false);
-  };
-  useEffect(() => {}, [current]);
+  const prev = () =>
+    setIndex((prev) => (prev - 1 + slides.length) % slides.length);
 
   return (
     <>
@@ -41,19 +35,17 @@ export default function Body() {
             <div className={style["try-whitepace"]}>Try whitepace Free</div>
           </div>
           <div className={style["right"]}>
-            <div className={style["slide-show"]}>
-              <div
-                className={`${style["slides"]} relative overflow-hidden w-[800px] h-[480px]`}
-              >
-                {images.map((image, index) => (
-                  <img
-                    key={index}
-                    className={`${style["slide"]} absolute top-0 ${
-                      is_next == true ? "" : "-"
-                    }translate-x-[${index == current ? 0 : 100}%]`}
-                    src={image}
-                    alt={`Slide ${index}`}
-                  />
+            <div className={style["slide-container"]}>
+              <div className={style["slide-wrapper"]}>
+                {slides.map((image, i) => (
+                  <div
+                    key={i}
+                    className={`${style["slide"]} ${
+                      i === index ? "active" : ""
+                    }`}
+                  >
+                    <img src={image} alt={`Slide ${index}`} />
+                  </div>
                 ))}
               </div>
             </div>
@@ -63,7 +55,7 @@ export default function Body() {
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 512 512"
                 onClick={() => {
-                  handlePrev();
+                  prev();
                 }}
               >
                 <path
@@ -76,7 +68,7 @@ export default function Body() {
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 512 512"
                 onClick={() => {
-                  handleNext();
+                  next();
                 }}
               >
                 <path

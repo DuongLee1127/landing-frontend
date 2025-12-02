@@ -1,6 +1,8 @@
-"use client";
 import "./globals.css";
-
+export const metadata = {
+  title: "Home",
+  description: "Home page",
+};
 export default function RootLayout({
   children,
 }: {

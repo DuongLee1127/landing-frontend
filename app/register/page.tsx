@@ -144,7 +144,7 @@ export default function SignUp() {
           }
         `}
                 >
-                  {time > 0 ? `Gửi lại sau ${time}s` : "Gửi mã OTP"}
+                  {time > 0 ? `Resend in ${time}s` : "Send OTP"}
                 </button>
               </div>
               <p id="email-help" className="text-xs text-slate-400 mt-2">

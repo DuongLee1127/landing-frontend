@@ -3,7 +3,7 @@
 import AppHeader from "@/components/header";
 import AppFooter from "@/components/footer";
 import style from "@/styles/style.module.scss";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 const slides = [
   "/images/ba-la-gi-min.jpeg",
@@ -13,12 +13,24 @@ const slides = [
 
 export default function Body() {
   const [index, setIndex] = useState(0);
-  console.log(style);
+  const [isPre, setIsPre] = useState(true);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  const next = () => setIndex((prev) => (prev + 1) % slides.length);
+  const next = () => {
+    setIndex((prev) => (prev + 1) % slides.length);
+    setIsPre(false);
+  };
 
-  const prev = () =>
+  const prev = () => {
     setIndex((prev) => (prev - 1 + slides.length) % slides.length);
+    setIsPre(true);
+  };
+
+  useEffect(() => {
+    intervalRef.current = setInterval(() => {
+      prev();
+    }, 3000);
+  }, []);
 
   return (
     <>
@@ -41,7 +53,11 @@ export default function Body() {
                   <div
                     key={i}
                     className={`${style["slide"]} ${
-                      i === index ? style["active"] : ""
+                      i === index
+                        ? style["active"]
+                        : isPre
+                        ? "translate-x-[40px]"
+                        : "-translate-x-[40px]"
                     }`}
                   >
                     <img src={image} alt={`Slide ${index}`} />
@@ -55,6 +71,12 @@ export default function Body() {
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 512 512"
                 onClick={() => {
+                  if (intervalRef.current) {
+                    clearInterval(intervalRef.current);
+                    intervalRef.current = setInterval(() => {
+                      prev();
+                    }, 3000);
+                  }
                   prev();
                 }}
               >
@@ -68,6 +90,12 @@ export default function Body() {
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 512 512"
                 onClick={() => {
+                  if (intervalRef.current) {
+                    clearInterval(intervalRef.current);
+                    intervalRef.current = setInterval(() => {
+                      next();
+                    }, 3000);
+                  }
                   next();
                 }}
               >

@@ -5,30 +5,61 @@ import AppFooter from "@/components/footer";
 import style from "@/styles/style.module.scss";
 import { useEffect, useState, useRef } from "react";
 
-const slides = [
-  "/images/ba-la-gi-min.jpeg",
-  "/images/idea.jpg",
-  "/images/IT.jpg ",
-];
+type Slide = {
+  id: string;
+  user_name: string;
+  url: string;
+  active?: boolean;
+};
 
 export default function Body() {
   const [index, setIndex] = useState(0);
   const [isPre, setIsPre] = useState(true);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [slides, setSlides] = useState<Slide[]>([]);
+
+  useEffect(() => {
+    async function load() {
+      setLoading(true);
+      const response = await fetch("http://localhost:8000/api/slides", {
+        method: "GET",
+      });
+      const data = await response.json();
+      setSlides(data);
+      console.log(data.length);
+      setLoading(false);
+    }
+    load();
+  }, []);
 
   const next = () => {
-    setIndex((prev) => (prev + 1) % slides.length);
+    setIndex((prev) => {
+      prev += 1;
+      if (prev > slides.length - 1) {
+        prev = 0;
+      }
+      return prev;
+    });
+
     setIsPre(false);
   };
 
   const prev = () => {
-    setIndex((prev) => (prev - 1 + slides.length) % slides.length);
+    setIndex((prev) => {
+      prev -= 1;
+      if (prev < 0) {
+        prev += slides.length - 1;
+      }
+      return prev;
+    });
     setIsPre(true);
   };
 
   useEffect(() => {
     intervalRef.current = setInterval(() => {
-      prev();
+      next();
+      // console.log(index);
     }, 3000);
   }, []);
 
@@ -60,7 +91,7 @@ export default function Body() {
                         : "-translate-x-[40px]"
                     }`}
                   >
-                    <img src={image} alt={`Slide ${index}`} />
+                    <img src={image.url} alt={`Slide ${index}`} />
                   </div>
                 ))}
               </div>

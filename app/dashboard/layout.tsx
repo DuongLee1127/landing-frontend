@@ -1,8 +1,10 @@
-"use client";
-
 import Sidebar from "@/components/dashboard/sidebar";
 import Navbar from "@/components/dashboard/navbar";
-
+export const dynamic = "force-dynamic";
+export const metadata = {
+  title: "Admin Dashboard",
+  description: "Admin Dashboard",
+};
 export default function DashboardLayout({
   children,
 }: {

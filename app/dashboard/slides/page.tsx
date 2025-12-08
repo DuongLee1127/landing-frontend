@@ -3,8 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import Footer from "@/components/dashboard/footer";
 import Cookies from "js-cookie";
-import useSWR, { mutate } from "swr";
-import { join } from "path";
 const token = Cookies.get("token") || "";
 
 type Slide = {
@@ -36,9 +34,6 @@ export default function SlidePage() {
 
       const response = await fetch("http://localhost:8000/api/slides", {
         method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
       });
       const data = await response.json();
       setSlides(data);

@@ -1,8 +1,9 @@
 "use client";
+
 import Cookies from "js-cookie";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, use } from "react";
 
 export default function User() {
   const [name, setName] = useState("");

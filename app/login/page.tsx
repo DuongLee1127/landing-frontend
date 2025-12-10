@@ -3,6 +3,7 @@ import style from "@/styles/login.module.scss";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { loginAction } from "@/app/login/loginaction";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -21,8 +22,10 @@ export default function Login() {
     const data = await res.json();
 
     if (res.ok) {
-      cookieStore.set("token", data.token);
-      cookieStore.set("role", data.role_id.toString());
+      await loginAction({
+        token: data.token,
+        role: data.role_id,
+      });
       if (data.role_id === 2) {
         router.push("/");
       } else {

@@ -19,7 +19,7 @@ function User() {
     const fetchData = async () => {
       setLoading(true);
       const token = Cookies.get("token");
-      const user = await fetch("http://localhost:8000/api/get-users", {
+      const user = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/get-users`, {
         next: { revalidate: 60 },
         method: "GET",
         headers: {

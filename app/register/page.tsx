@@ -15,7 +15,7 @@ export default function SignUp() {
   const router = useRouter();
 
   const handleSOtp = async () => {
-    const res = await fetch("http://localhost:8000/api/send-otp", {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/send-otp`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -44,7 +44,7 @@ export default function SignUp() {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const res = await fetch("http://localhost:8000/api/register", {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

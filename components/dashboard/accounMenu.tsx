@@ -34,7 +34,7 @@ export default function AccountMenu() {
     const fetchUser = async () => {
       try {
         const token = Cookies.get("token");
-        const res = await apiFetch("http://localhost:8000/api/user", {
+        const res = await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/user`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -53,7 +53,7 @@ export default function AccountMenu() {
   const handleLogout = async () => {
     try {
       const token = Cookies.get("token");
-      const res = await fetch("http://localhost:8000/api/logout", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/logout`, {
         method: "POST",
         credentials: "include",
         headers: {

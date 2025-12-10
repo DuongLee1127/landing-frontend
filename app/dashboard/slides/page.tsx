@@ -32,7 +32,7 @@ export default function SlidePage() {
     async function load() {
       setLoading(true);
 
-      const response = await fetch("http://localhost:8000/api/slides", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/slides`, {
         method: "GET",
       });
       const data = await response.json();
@@ -70,16 +70,13 @@ export default function SlidePage() {
     const fd = new FormData();
     if (file) fd.append("image", file);
     if (editing) {
-      const response = await fetch(
-        `http://localhost:8000/api/update-slide/${editing.id}`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          body: fd,
-        }
-      );
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/update-slide/${editing.id}`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: fd,
+      });
 
       const data = await response.json();
       console.log(data);
@@ -91,7 +88,7 @@ export default function SlidePage() {
       setFetchSlides(fetchSlides + 1);
       setSlides((prev) => [...prev]);
     } else {
-      const response = await fetch("http://localhost:8000/api/add-slide", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}//add-slide`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -114,7 +111,7 @@ export default function SlidePage() {
 
   async function handleDelete(id: string) {
     if (!confirm("Delete this slide? This action cannot be undone.")) return;
-    const res = await fetch(`http://localhost:8000/api/delete/${id}`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/delete/${id}`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`,

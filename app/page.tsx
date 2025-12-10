@@ -22,7 +22,7 @@ export default function Body() {
   useEffect(() => {
     async function load() {
       setLoading(true);
-      const response = await fetch("http://localhost:8000/api/slides", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/slides`, {
         method: "GET",
       });
       const data = await response.json();

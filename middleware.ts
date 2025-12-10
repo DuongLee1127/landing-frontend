@@ -4,6 +4,8 @@ import type { NextRequest } from "next/server";
 export function middleware(request: NextRequest) {
   const token = request.cookies.get("token")?.value;
   const role = request.cookies.get("role")?.value;
+  console.log("TOKEN: ", token);
+  console.log("ROLE: ", role);
   if (!role) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
@@ -18,7 +20,7 @@ export function middleware(request: NextRequest) {
   if (!token) {
     const handleLogout = async () => {
       try {
-        const res = await fetch("http://localhost:8000/api/logout", {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/logout`, {
           method: "POST",
           credentials: "include",
           headers: {

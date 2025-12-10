@@ -3,7 +3,7 @@ import style from "@/styles/login.module.scss";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { loginAction } from "@/app/login/loginaction";
+import { loginAction } from "@/app/login/loginAction";
 
 export default function Login() {
   const [email, setEmail] = useState("");

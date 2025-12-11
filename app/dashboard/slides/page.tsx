@@ -32,9 +32,12 @@ export default function SlidePage() {
     async function load() {
       setLoading(true);
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/slides`, {
-        method: "GET",
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/slides`,
+        {
+          method: "GET",
+        }
+      );
       const data = await response.json();
       setSlides(data);
       console.log(data);
@@ -70,13 +73,16 @@ export default function SlidePage() {
     const fd = new FormData();
     if (file) fd.append("image", file);
     if (editing) {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/update-slide/${editing.id}`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: fd,
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/update-slide/${editing.id}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: fd,
+        }
+      );
 
       const data = await response.json();
       console.log(data);
@@ -88,13 +94,16 @@ export default function SlidePage() {
       setFetchSlides(fetchSlides + 1);
       setSlides((prev) => [...prev]);
     } else {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}//add-slide`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: fd,
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/add-slide`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: fd,
+        }
+      );
 
       const data = await response.json();
       if (!response.ok) {

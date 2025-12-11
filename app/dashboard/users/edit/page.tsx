@@ -21,12 +21,16 @@ export default function User() {
   useEffect(() => {
     const fetchUser = async () => {
       const token = Cookies.get("token");
-      const user = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/get-user/${id}`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const user = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/get-user/${id}`,
+        {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       const data = await user.json();
 
@@ -78,13 +82,17 @@ export default function User() {
     formData.append("email", email);
     formData.append("role", role);
 
-    const data = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/update-user/${id}`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: formData,
-    });
+    const data = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/update-user/${id}`,
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      }
+    );
 
     const dataJson = await data.json();
     if (data.ok) {

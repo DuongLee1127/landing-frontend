@@ -1,9 +1,6 @@
-"use client";
 import style from "@/styles/style.module.scss";
-import { useRouter } from "next/navigation";
 
 function Header() {
-  const router = useRouter();
   return (
     <header>
       <nav>

@@ -22,9 +22,12 @@ export default function Body() {
   useEffect(() => {
     async function load() {
       setLoading(true);
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/slides`, {
-        method: "GET",
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/slides`,
+        {
+          method: "GET",
+        }
+      );
       const data = await response.json();
       setSlides(data);
       console.log(data.length);
@@ -49,7 +52,7 @@ export default function Body() {
     setIndex((prev) => {
       prev -= 1;
       if (prev < 0) {
-        prev += slides.length - 1;
+        prev = slides.length - 1;
       }
       return prev;
     });

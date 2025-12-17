@@ -109,7 +109,7 @@ export default function SlidePage() {
       if (!response.ok) {
         console.log("Error saving slide: ", data.error);
         alert(data.error);
-        return;
+        return;   
       }
       setSlides((prev) => [data, ...prev]);
     }
